@@ -1,0 +1,20 @@
+# Set the default behavior, in case people don't have core.autocrlf set.
+* text=auto
+
+# Explicitly declare text files you want to always be normalized
+*.java text
+*.js text
+*.jsx text
+*.html text
+*.css text
+*.xml text
+*.properties text
+*.md text
+*.json text
+.gitignore text
+
+# These files should have LF line endings, even on Windows
+*.sh text eol=lf
+
+# These files should have CRLF line endings, even on Linux/macOS
+*.cmd text eol=crlf

@@ -31,3 +31,6 @@ build/
 
 ### VS Code ###
 .vscode/
+digital-banking-frontend/node_modules
+digital-banking-frontend/dist
+digital-banking-frontend/.vite/

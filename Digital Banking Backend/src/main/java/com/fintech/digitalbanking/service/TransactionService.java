@@ -9,7 +9,7 @@ import com.fintech.digitalbanking.exception.InsufficientFundsException;
 import com.fintech.digitalbanking.exception.RoleNotFoundException;
 import com.fintech.digitalbanking.repository.AccountRepository;
 import com.fintech.digitalbanking.repository.TransactionRepository;
-import com.fintech.digitalbanking.repository.UserRepository;
+// import com.fintech.digitalbanking.repository.UserRepository; // <-- Removed (unused)
 import com.fintech.digitalbanking.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -25,7 +25,7 @@ public class TransactionService {
 
     private final TransactionRepository transactionRepository;
     private final AccountRepository accountRepository;
-    private final UserRepository userRepository;
+    // private final UserRepository userRepository; // <-- Removed (unused)
     private final SecurityUtil securityUtil;
 
     private void requireActive(Account account) {
@@ -44,22 +44,22 @@ public class TransactionService {
     @Transactional(readOnly = true)
     public List<Transaction> getMyTransactions() {
         User currentUser = securityUtil.getCurrentUserEntity();
-        List<Account> myAccounts = accountRepository.findByUser(currentUser);
 
-        if (myAccounts.isEmpty()) {
-            return List.of();
-        }
-
-        List<Long> accountIds = myAccounts.stream()
+        List<Long> myAccountIds = accountRepository.findByUser(currentUser)
+                .stream()
                 .map(Account::getId)
                 .toList();
 
-        return transactionRepository.findBySourceAccount_IdInOrTargetAccount_IdIn(accountIds, accountIds);
+        if (myAccountIds.isEmpty()) {
+            return List.of();
+        }
+
+        return transactionRepository.findAllByAccountIds(myAccountIds);
     }
 
     @Transactional
     public Transaction deposit(Long accountId, BigDecimal amount) {
-        Account account = accountRepository.findById(accountId)
+        Account account = accountRepository.findByIdForUpdate(accountId)
                 .orElseThrow(() -> new RoleNotFoundException("Account not found: " + accountId));
         requireActive(account);
         validateOwnershipOrAdmin(account);
@@ -69,15 +69,17 @@ public class TransactionService {
 
         Transaction tx = Transaction.builder()
                 .sourceAccount(account)
+                .targetAccount(null)
                 .type(TransactionType.DEPOSIT)
                 .amount(amount)
+                // Note: Timestamp is set by default in your Transaction entity
                 .build();
         return transactionRepository.save(tx);
     }
 
     @Transactional
     public Transaction withdraw(Long accountId, BigDecimal amount) {
-        Account account = accountRepository.findById(accountId)
+        Account account = accountRepository.findByIdForUpdate(accountId)
                 .orElseThrow(() -> new RoleNotFoundException("Account not found: " + accountId));
         requireActive(account);
         validateOwnershipOrAdmin(account);
@@ -90,6 +92,7 @@ public class TransactionService {
 
         Transaction tx = Transaction.builder()
                 .sourceAccount(account)
+                .targetAccount(null)
                 .type(TransactionType.WITHDRAW)
                 .amount(amount)
                 .build();
@@ -97,14 +100,19 @@ public class TransactionService {
     }
 
     @Transactional
-    public Transaction transfer(Long sourceAccountId, Long targetAccountId, BigDecimal amount) {
-        Account source = accountRepository.findById(sourceAccountId)
+    public Transaction transfer(Long sourceAccountId, String targetAccountNumber, BigDecimal amount) {
+        Account source = accountRepository.findByIdForUpdate(sourceAccountId)
                 .orElseThrow(() -> new RoleNotFoundException("Source account not found: " + sourceAccountId));
-        Account target = accountRepository.findById(targetAccountId)
-                .orElseThrow(() -> new RoleNotFoundException("Target account not found: " + targetAccountId));
+        Account target = accountRepository.findByAccountNumberForUpdate(targetAccountNumber)
+                .orElseThrow(() -> new RoleNotFoundException("Target account not found: " + targetAccountNumber));
+
         requireActive(source);
         requireActive(target);
         validateOwnershipOrAdmin(source);
+
+        if (source.getId().equals(target.getId())) {
+            throw new CustomAccessDeniedException("Cannot transfer to the same account.");
+        }
 
         if (source.getBalance().compareTo(amount) < 0) {
             throw new InsufficientFundsException("Insufficient balance");
@@ -128,7 +136,7 @@ public class TransactionService {
         if (accountId == null) {
             return transactionRepository.findAll();
         }
-        return transactionRepository.findBySourceAccount_IdOrTargetAccount_Id(accountId, accountId);
+        return transactionRepository.findAllByAccountIds(List.of(accountId));
     }
 
     @Transactional
@@ -152,9 +160,12 @@ public class TransactionService {
                 if (orig.getTargetAccount() == null || orig.getSourceAccount() == null) {
                     throw new RoleNotFoundException("Malformed transfer transaction");
                 }
+
+                // --- THIS IS THE FIX ---
+                // We must pass the account NUMBER (String) as the second argument
                 reversal = transfer(
                         orig.getTargetAccount().getId(),
-                        orig.getSourceAccount().getId(),
+                        orig.getSourceAccount().getAccountNumber(), // <-- Was .getId()
                         orig.getAmount()
                 );
                 break;

@@ -1,3 +1,5 @@
+// src/main/java/com/fintech/digitalbanking/controller/UserTransactionController.java
+
 package com.fintech.digitalbanking.controller;
 
 import com.fintech.digitalbanking.dto.DepositRequest;
@@ -37,9 +39,13 @@ public class UserTransactionController {
 
     @PostMapping("/transfer")
     public ResponseEntity<TransactionDto> transfer(@Valid @RequestBody TransferRequest request) {
+
+        // --- THIS IS THE FIX ---
+        // We must call request.getTargetAccountNumber() (the new String field)
+        // instead of request.getTargetAccountId() (the old Long field)
         Transaction tx = transactionService.transfer(
                 request.getSourceAccountId(),
-                request.getTargetAccountId(),
+                request.getTargetAccountNumber(), // <-- This line is now correct
                 request.getAmount()
         );
         return ResponseEntity.ok(toDto(tx));

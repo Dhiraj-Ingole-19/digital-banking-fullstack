@@ -3,13 +3,13 @@ package com.fintech.digitalbanking.security;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.GrantedAuthority;
+// import org.springframework.security.core.GrantedAuthority; // <-- Removed (unused)
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
-import java.util.Collection;
+// import java.util.Collection; // <-- Removed (unused)
 import java.util.Date;
 import java.util.List;
 import java.util.function.Function;
@@ -35,16 +35,20 @@ public class JwtService {
                 .map(ga -> {
                     String a = ga.getAuthority();
                     if (a == null) return "";
+                    // Ensure roles are stored as "ROLE_USER", "ROLE_ADMIN" etc.
                     return a.startsWith("ROLE_") ? a : "ROLE_" + a;
                 })
                 .toList();
 
+        // --- THIS IS THE FIX for deprecated methods ---
+        Date now = new Date();
+        Date expiryDate = new Date(now.getTime() + EXPIRATION);
 
         return Jwts.builder()
-                .setSubject(userDetails.getUsername())
+                .subject(userDetails.getUsername())
                 .claim("roles", roles)
-                .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION))
+                .issuedAt(now)
+                .expiration(expiryDate) // Use .expiration()
                 .signWith(getSigningKey())
                 .compact();
     }
@@ -53,7 +57,7 @@ public class JwtService {
         return extractClaim(token, Claims::getSubject);
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("unchecked") // This is fine
     public List<String> extractRoles(String token) {
         Claims claims = extractAllClaims(token);
         Object rolesObj = claims.get("roles");

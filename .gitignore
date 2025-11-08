@@ -1,0 +1,17 @@
+﻿# General
+.idea/
+.vscode/
+*.iml
+
+# Backend (Spring Boot)
+Digital Banking Backend/target/
+Digital Banking Backend/.mvn/
+Digital Banking Backend/HELP.md
+
+# Frontend (Vite/React)
+digital-banking-frontend/node_modules/
+digital-banking-frontend/dist/
+digital-banking-frontend/.vite/
+
+# Root node_modules (from mistake)
+node_modules/

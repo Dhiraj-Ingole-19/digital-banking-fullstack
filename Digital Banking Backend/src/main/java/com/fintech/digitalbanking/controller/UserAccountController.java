@@ -2,12 +2,15 @@ package com.fintech.digitalbanking.controller;
 
 import com.fintech.digitalbanking.dto.AccountDto;
 import com.fintech.digitalbanking.dto.CreateAccountRequest;
+import com.fintech.digitalbanking.dto.UserInfoDto;
 import com.fintech.digitalbanking.entity.Account;
+import com.fintech.digitalbanking.entity.User;
 import com.fintech.digitalbanking.service.AccountService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
@@ -22,6 +25,7 @@ public class UserAccountController {
 
     private final AccountService accountService;
 
+    // ... (All other methods like createAccount, getMyAccounts, etc. are unchanged) ...
     @PostMapping
     public ResponseEntity<AccountDto> createAccount(@Valid @RequestBody CreateAccountRequest request) {
         Account created = accountService.createAccount(request.getType());
@@ -37,27 +41,23 @@ public class UserAccountController {
         return ResponseEntity.ok(accounts);
     }
 
-    // CHANGED: The path now matches the Postman collection and standard REST conventions.
     @GetMapping("/balance/{accountId}")
     public ResponseEntity<BigDecimal> getBalance(@PathVariable Long accountId) {
         return ResponseEntity.ok(accountService.getBalance(accountId));
     }
 
-    // CHANGED: This now uses a PathVariable for a more RESTful design.
     @PostMapping("/deactivate/{accountId}")
     public ResponseEntity<String> deactivateAccount(@PathVariable Long accountId) {
         accountService.deactivateAccount(accountId);
         return ResponseEntity.ok("Account deactivated successfully");
     }
 
-    // CHANGED: This now uses a PathVariable for a more RESTful design.
     @PostMapping("/activate/{accountId}")
     public ResponseEntity<String> activateAccount(@PathVariable Long accountId) {
         accountService.activateAccount(accountId);
         return ResponseEntity.ok("Account activated successfully");
     }
 
-    // CHANGED: Method is now POST and uses a PathVariable to identify the account.
     @PostMapping("/select/{accountId}")
     public ResponseEntity<String> selectAccount(@PathVariable Long accountId) {
         accountService.selectAccount(accountId);
@@ -69,10 +69,44 @@ public class UserAccountController {
         return ResponseEntity.ok(accountService.getSelectedAccountBalance());
     }
 
+
+    @GetMapping("/me")
+    public ResponseEntity<UserInfoDto> getMyDetails(Authentication authentication) {
+        String username = authentication.getName();
+        User user = accountService.getUserByUsername(username);
+        List<Account> accounts = accountService.getAccountsByUserId(user.getId());
+
+        List<AccountDto> accountDtos = accounts.stream()
+                .map(this::toDto)
+                .collect(Collectors.toList());
+
+        // --- THIS IS THE FIX ---
+        // This logic correctly formats roles, preventing "ROLE_ROLE_ADMIN"
+        List<String> roleNames = user.getRoles().stream()
+                .map(role -> {
+                    String roleName = role.getName().toUpperCase();
+                    return roleName.startsWith("ROLE_") ? roleName : "ROLE_" + roleName;
+                })
+                .collect(Collectors.toList());
+        // --- END OF FIX ---
+
+        UserInfoDto dto = UserInfoDto.builder()
+                .id(user.getId())
+                .username(user.getUsername())
+                .enabled(user.isEnabled())
+                .accounts(accountDtos)
+                .selectedAccountId(user.getSelectedAccountId())
+                .roles(roleNames) // Add roles to the response
+                .build();
+
+        return ResponseEntity.ok(dto);
+    }
+
+
     private AccountDto toDto(Account a) {
         return AccountDto.builder()
                 .id(a.getId())
-                .accountNumber(a.getAccountNumber()) // Added for more complete DTO
+                .accountNumber(a.getAccountNumber())
                 .type(a.getAccountType().name())
                 .balance(a.getBalance())
                 .active(a.isActive())

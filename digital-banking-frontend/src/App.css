@@ -1,0 +1,88 @@
+/* src/App.css */
+
+/* =================================
+   Global Variables (Your Theme)
+   ================================= */
+:root {
+  --color-primary: #0a4d98;
+  --color-primary-dark: #083b75;
+  --color-secondary: #f0f8ff; /* AliceBlue - a very light blue */
+  --color-white: #ffffff;
+  --color-gray-light: #f4f7f6;
+  --color-gray-medium: #d3d9de;
+  --color-gray-dark: #333333;
+  --color-text: #2c3e50;
+  --color-success: #28a745;
+  --color-danger: #dc3545;
+
+  --font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --border-radius: 8px;
+}
+
+/* =================================
+   CSS Reset & Base Styles
+   ================================= */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* THIS IS THE FIX for the "tiny screen" */
+html,
+body,
+#root {
+  height: 100%;
+  width: 100%;
+}
+
+body {
+  font-family: var(--font-family);
+  color: var(--color-text);
+  background-color: var(--color-gray-light);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  margin-bottom: 0.75rem;
+  font-weight: 600;
+  color: var(--color-primary-dark);
+}
+
+p {
+  margin-bottom: 1rem;
+}
+
+a {
+  color: var(--color-primary);
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+/* =================================
+   Main App Layout
+   ================================= */
+.app-layout {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  width: 100%;
+}
+
+.main-content {
+  flex-grow: 1; /* This makes the content area fill all available space */
+  width: 100%;
+  max-width: 1280px; /* Sets a max width for large desktops */
+  margin: 0 auto; /* Centers the content */
+  padding: 1.5rem;
+  overflow-y: auto; /* Adds scrolling only to the content area */
+}

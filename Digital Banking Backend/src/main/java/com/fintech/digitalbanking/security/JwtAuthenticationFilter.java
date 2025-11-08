@@ -5,6 +5,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.NonNull; // <-- IMPORT ADDED
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -29,16 +30,15 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final UserDetailsService userDetailsService;
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request,
-                                    HttpServletResponse response,
-                                    FilterChain filterChain) throws ServletException, IOException {
+    protected void doFilterInternal(@NonNull HttpServletRequest request,
+                                    @NonNull HttpServletResponse response,
+                                    @NonNull FilterChain filterChain) throws ServletException, IOException {
 
         final String authHeader = request.getHeader("Authorization");
         final String token;
         final String username;
 
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            // no token present - proceed down the chain (other security rules will handle blocking)
             filterChain.doFilter(request, response);
             return;
         }
@@ -56,17 +56,17 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             UserDetails userDetails = userDetailsService.loadUserByUsername(username);
 
             if (jwtService.validateToken(token, userDetails)) {
-                // Extract a list of role names from the token (e.g. ["ADMIN"] or ["ROLE_ADMIN"])
                 List<String> roles = jwtService.extractRoles(token);
 
-                // Normalize to Spring Security authorities: ensure each role begins with "ROLE_"
+                // This logic is correct (it fixes the ROLE_ROLE_USER bug)
                 var authorities = roles.stream()
                         .map(role -> {
                             if (role == null) return null;
-                            String trimmed = role.trim();
-                            return trimmed.startsWith("ROLE_")
-                                    ? new SimpleGrantedAuthority(trimmed)
-                                    : new SimpleGrantedAuthority("ROLE_" + trimmed);
+                            if (role.startsWith("ROLE_")) {
+                                return new SimpleGrantedAuthority(role);
+                            } else {
+                                return new SimpleGrantedAuthority("ROLE_" + role);
+                            }
                         })
                         .filter(a -> a != null)
                         .toList();

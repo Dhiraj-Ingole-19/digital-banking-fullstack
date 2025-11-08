@@ -1,0 +1,41 @@
+/* src/pages/Dashboard.css */
+
+.dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap; 
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid var(--color-gray-medium);
+}
+
+/* ... (existing styles for .dashboard-header h1, .account-actions, .btn, .btn-success, .btn-primary) ... */
+
+/* --- ADD THIS NEW GENERIC BUTTON STYLE --- */
+.btn-outline {
+  font-family: var(--font-family);
+  font-size: 1rem;
+  font-weight: 600;
+  padding: 0.75rem 1.5rem;
+  border: 1px solid var(--color-gray-medium);
+  border-radius: var(--border-radius);
+  background-color: var(--color-white);
+  color: var(--color-text);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-outline:hover {
+  background-color: var(--color-secondary);
+  border-color: var(--color-primary);
+}
+
+/* --- ADD THIS NEW STYLE --- */
+.transaction-history-toggle {
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+/* ... (existing styles for .account-list, .empty-state, .empty-state-icon, .empty-state p) ... */

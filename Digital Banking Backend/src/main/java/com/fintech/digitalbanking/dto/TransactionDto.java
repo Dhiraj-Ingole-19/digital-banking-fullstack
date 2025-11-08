@@ -15,4 +15,5 @@ public class TransactionDto {
     private LocalDateTime timestamp;
     private Long sourceAccountId;
     private Long targetAccountId;
+    private boolean reversed;
 }

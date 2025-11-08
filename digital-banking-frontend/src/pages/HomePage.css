@@ -1,0 +1,187 @@
+/* src/pages/HomePage.css */
+
+.home-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: var(--color-white);
+}
+
+/* --- Header --- */
+.home-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem;
+  border-bottom: 1px solid var(--color-gray-light);
+  background-color: var(--color-white);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.home-nav-brand {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--color-primary);
+}
+
+.home-nav-actions {
+  display: flex;
+  gap: 1rem;
+}
+
+.btn-nav-login, .btn-nav-register {
+  font-family: var(--font-family);
+  font-size: 1rem;
+  font-weight: 600;
+  padding: 0.6rem 1.2rem;
+  border-radius: var(--border-radius);
+  text-decoration: none;
+  transition: all 0.2s;
+}
+
+.btn-nav-login {
+  background-color: var(--color-white);
+  color: var(--color-primary);
+  border: 1px solid var(--color-primary);
+}
+.btn-nav-login:hover {
+  background-color: var(--color-secondary);
+}
+
+.btn-nav-register {
+  background-color: var(--color-primary);
+  color: var(--color-white);
+  border: 1px solid var(--color-primary);
+}
+.btn-nav-register:hover {
+  background-color: var(--color-primary-dark);
+}
+
+/* --- Hero Section --- */
+.hero-section {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: center;
+  padding: 4rem 2rem;
+  background-color: var(--color-secondary);
+  gap: 2rem;
+}
+
+.hero-content {
+  padding-left: 2rem;
+}
+
+.hero-title {
+  font-size: 3.5rem;
+  font-weight: 700;
+  color: var(--color-primary-dark);
+  line-height: 1.1;
+  margin-bottom: 1.5rem;
+}
+
+.hero-subtitle {
+  font-size: 1.25rem;
+  color: var(--color-text);
+  margin-bottom: 2rem;
+}
+
+.btn-hero-cta {
+  font-family: var(--font-family);
+  font-size: 1.1rem;
+  font-weight: 600;
+  padding: 0.8rem 1.5rem;
+  border-radius: var(--border-radius);
+  text-decoration: none;
+  transition: all 0.2s;
+  background-color: var(--color-success);
+  color: var(--color-white);
+}
+.btn-hero-cta:hover {
+  background-color: #218838;
+}
+
+/* --- THIS IS THE FIX --- */
+/* This replaces your old .hero-image-placeholder */
+.hero-image-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 350px; 
+  overflow: hidden; 
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow-md);
+}
+
+.hero-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* Makes the image fill the box without stretching */
+}
+/* --- END OF FIX --- */
+
+
+/* --- Features Section --- */
+.features-section {
+  padding: 4rem 2rem;
+  text-align: center;
+}
+
+.section-title {
+  font-size: 2.5rem;
+  color: var(--color-primary-dark);
+  margin-bottom: 3rem;
+}
+
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.feature-card {
+  background-color: var(--color-white);
+  border: 1px solid var(--color-gray-light);
+  border-radius: var(--border-radius);
+  padding: 2rem;
+  box-shadow: var(--shadow-sm);
+  transition: all 0.2s;
+}
+.feature-card:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-5px);
+}
+.feature-card h3 {
+  font-size: 1.5rem;
+  color: var(--color-primary);
+}
+
+/* --- Footer --- */
+.home-footer {
+  text-align: center;
+  padding: 2rem;
+  background-color: var(--color-gray-dark);
+  color: var(--color-gray-light);
+  margin-top: auto; /* Pushes footer to the bottom */
+}
+
+/* --- Responsive --- */
+@media (max-width: 900px) {
+  .hero-section {
+    grid-template-columns: 1fr;
+    text-align: center;
+  }
+  .hero-content {
+    padding-left: 0;
+    grid-row: 1; /* Makes content appear before image on mobile */
+  }
+  .features-grid {
+    grid-template-columns: 1fr;
+  }
+  .hero-image-wrapper {
+      height: 300px; /* Adjust height for smaller screens */
+  }
+}

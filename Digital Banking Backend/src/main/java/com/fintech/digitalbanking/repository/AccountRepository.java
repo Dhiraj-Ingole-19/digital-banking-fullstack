@@ -17,10 +17,15 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
     @Query("SELECT a FROM Account a WHERE a.accountNumber = :accountNumber")
     Optional<Account> findByAccountNumberForUpdate(@Param("accountNumber") String accountNumber);
 
+    // --- THIS METHOD IS NEW ---
+    // We need this to lock the source account during a transfer
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query("SELECT a FROM Account a WHERE a.id = :id")
+    Optional<Account> findByIdForUpdate(@Param("id") Long id);
+
     Optional<Account> findByAccountNumber(String accountNumber);
 
     Optional<Account> findFirstByUserOrderByCreatedAtAsc(User user);
 
-    // ----- ADDED: find accounts by user (used by AccountService & TransactionService)
     List<Account> findByUser(User user);
 }

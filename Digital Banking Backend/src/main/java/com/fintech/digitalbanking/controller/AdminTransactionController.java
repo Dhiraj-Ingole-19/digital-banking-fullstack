@@ -60,9 +60,12 @@ public class AdminTransactionController {
 
     @PostMapping("/transfer")
     public ResponseEntity<TransactionDto> adminTransfer(@Valid @RequestBody TransferRequest request) {
+
+        // --- THIS IS THE FIX ---
+        // Changed to use the new method from the TransferRequest DTO
         var tx = transactionService.transfer(
                 request.getSourceAccountId(),
-                request.getTargetAccountId(),
+                request.getTargetAccountNumber(), // <-- This line is now correct
                 request.getAmount()
         );
         return ResponseEntity.ok(toDto(tx));
@@ -74,6 +77,8 @@ public class AdminTransactionController {
         return ResponseEntity.ok(toDto(tx));
     }
 
+    // In: AdminTransactionController.java
+
     private TransactionDto toDto(Transaction t) {
         return TransactionDto.builder()
                 .id(t.getId())
@@ -82,6 +87,7 @@ public class AdminTransactionController {
                 .timestamp(t.getTimestamp())
                 .sourceAccountId(t.getSourceAccount() != null ? t.getSourceAccount().getId() : null)
                 .targetAccountId(t.getTargetAccount() != null ? t.getTargetAccount().getId() : null)
+                .reversed(t.isReversed()) // <-- ADD THIS LINE
                 .build();
     }
 }

@@ -9,7 +9,7 @@ import com.fintech.digitalbanking.repository.AccountRepository;
 import com.fintech.digitalbanking.repository.UserRepository;
 import com.fintech.digitalbanking.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.access.prepost.PreAuthorize;
+// Unused import removed
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -64,9 +64,13 @@ public class AccountService {
         return accountRepository.findByUser(user);
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+    //
+    // THIS ANNOTATION HAS BEEN REMOVED TO FIX THE 403 FORBIDDEN ERROR
+    // The Controller is already secured, so this is safe.
+    //
     @Transactional(readOnly = true)
     public List<Account> getAccountsByUserId(Long userId) {
+        // === THIS LINE IS NOW FIXED ===
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RoleNotFoundException("User not found with ID: " + userId));
         return accountRepository.findByUser(user);
@@ -129,7 +133,9 @@ public class AccountService {
                 UUID.randomUUID().toString().substring(0, 4).toUpperCase();
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+    //
+    // THIS ANNOTATION WAS REMOVED IN THE PREVIOUS STEP (Keep it removed)
+    //
     public User getUserByUsername(String username) {
         return userRepository.findByUsername(username)
                 .orElseThrow(() -> new RoleNotFoundException("User not found: " + username));

@@ -1,46 +1,75 @@
-// src/components/TransactionItem.jsx
 import React, { useState } from 'react';
 import { formatCurrency, formatDateTime } from '../utils/formatters';
-// 1. IMPORT THE NEW MODAL
 import ReportModal from './ReportModal';
 import './TransactionItem.css';
 
 const TransactionItem = ({ transaction, userAccountIds }) => {
-  // 2. State to control the modal
   const [isReporting, setIsReporting] = useState(false);
-  const [isReported, setIsReported] = useState(transaction.reported); // We need to add this to the DTO
+  const [isReported, setIsReported] = useState(transaction.reported);
 
-  // ... (logic for isDebit and description is unchanged) ...
+  // --- 1. RESTORED LOGIC: Determine if it is a Debit or Credit ---
   let isDebit = false;
-  // ... (rest of logic) ...
+  let description = '';
+  let icon = '';
 
-  // 3. This is called when the modal submits successfully
+  if (transaction.type === 'WITHDRAW') {
+    isDebit = true;
+    description = 'Bill Payment / Withdrawal';
+    icon = '🧾'; // Receipt icon
+  } else if (transaction.type === 'DEPOSIT') {
+    isDebit = false;
+    description = 'Money Added';
+    icon = '💰'; // Money bag
+  } else if (transaction.type === 'TRANSFER') {
+    // Check if the current user is the Sender (Source)
+    if (userAccountIds.has(transaction.sourceAccountId)) {
+      isDebit = true;
+      description = `Transfer to Acc: ${transaction.targetAccountId}`;
+      icon = '↗️'; // Outgoing arrow
+    } else {
+      isDebit = false;
+      description = `Transfer from Acc: ${transaction.sourceAccountId}`;
+      icon = '↙️'; // Incoming arrow
+    }
+  }
+
   const handleReportSuccess = () => {
     setIsReporting(false);
-    setIsReported(true); // Visually disable the button
+    setIsReported(true);
     alert("Transaction reported successfully.");
   };
 
   return (
     <>
-      <div className="tx-item">
-        {/* ... (icon, details, amount are unchanged) ... */}
+      <div className="transaction-item">
+        {/* --- 2. RESTORED JSX: Render Icon --- */}
+        <div className={`tx-icon ${isDebit ? 'tx-icon-debit' : 'tx-icon-credit'}`}>
+          {icon}
+        </div>
 
-        {/* 4. Update the "Report" button logic */}
-        {(isDebit || transaction.type === 'DEPOSIT') && ( // Allow reporting deposits
-          <div className="tx-report-action">
-            <button 
-              className="btn-report" 
-              onClick={() => setIsReporting(true)} // Open the modal
-              disabled={isReported} // Disable if already reported
-            >
-              {isReported ? 'Reported' : 'Report'}
-            </button>
-          </div>
-        )}
+        {/* --- 3. RESTORED JSX: Render Description & Date --- */}
+        <div className="tx-details">
+          <span className="tx-description">{description}</span>
+          <span className="tx-date">{formatDateTime(transaction.timestamp)}</span>
+        </div>
+
+        {/* --- 4. RESTORED JSX: Render Amount --- */}
+        <div className={`tx-amount ${isDebit ? 'tx-amount-debit' : 'tx-amount-credit'}`}>
+          {isDebit ? '-' : '+'}{formatCurrency(transaction.amount)}
+        </div>
+
+        {/* Report Button Logic */}
+        <div className="tx-report-action">
+          <button
+            className="btn-report"
+            onClick={() => setIsReporting(true)}
+            disabled={isReported}
+          >
+            {isReported ? 'Reported' : 'Report'}
+          </button>
+        </div>
       </div>
-      
-      {/* 5. Render the modal (it's hidden by default) */}
+
       {isReporting && (
         <ReportModal
           transaction={transaction}

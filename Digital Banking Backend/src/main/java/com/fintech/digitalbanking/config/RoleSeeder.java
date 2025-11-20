@@ -4,11 +4,13 @@ import com.fintech.digitalbanking.entity.Role;
 import com.fintech.digitalbanking.repository.RoleRepository;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
 
 @Component
+@Lazy(false)
 @RequiredArgsConstructor
 public class RoleSeeder {
 

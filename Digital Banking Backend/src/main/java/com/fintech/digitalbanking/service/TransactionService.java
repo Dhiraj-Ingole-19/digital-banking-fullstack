@@ -59,7 +59,7 @@ public class TransactionService {
 
     @Transactional
     public Transaction deposit(Long accountId, BigDecimal amount) {
-        Account account = accountRepository.findByIdForUpdate(accountId)
+        Account account = accountRepository.findById(accountId)
                 .orElseThrow(() -> new RoleNotFoundException("Account not found: " + accountId));
         requireActive(account);
         validateOwnershipOrAdmin(account);
@@ -79,7 +79,7 @@ public class TransactionService {
 
     @Transactional
     public Transaction withdraw(Long accountId, BigDecimal amount) {
-        Account account = accountRepository.findByIdForUpdate(accountId)
+        Account account = accountRepository.findById(accountId)
                 .orElseThrow(() -> new RoleNotFoundException("Account not found: " + accountId));
         requireActive(account);
         validateOwnershipOrAdmin(account);
@@ -101,9 +101,9 @@ public class TransactionService {
 
     @Transactional
     public Transaction transfer(Long sourceAccountId, String targetAccountNumber, BigDecimal amount) {
-        Account source = accountRepository.findByIdForUpdate(sourceAccountId)
+        Account source = accountRepository.findById(sourceAccountId)
                 .orElseThrow(() -> new RoleNotFoundException("Source account not found: " + sourceAccountId));
-        Account target = accountRepository.findByAccountNumberForUpdate(targetAccountNumber)
+        Account target = accountRepository.findByAccountNumber(targetAccountNumber)
                 .orElseThrow(() -> new RoleNotFoundException("Target account not found: " + targetAccountNumber));
 
         requireActive(source);

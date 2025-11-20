@@ -2,7 +2,7 @@
 
 import axios from 'axios';
 
-const API_URL = 'http://localhost:8081/api';
+const API_URL = 'https://digital-banking-fullstack.onrender.com/api';
 
 // --- THIS IS THE FIX (Part 1) ---
 // We create 'api' and immediately export it as a named constant

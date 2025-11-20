@@ -8,17 +8,18 @@ import { adminMakeDeposit, adminMakeWithdraw, adminMakeTransfer } from '../servi
 import { formatCurrency } from '../utils/formatters';
 import './TransactionModal.css';
 
-// 1. Add new prop 'isAdminMode', default to false
-const TransactionModal = ({ mode, account, onClose, onSuccess, isAdminMode = false }) => {
+// 1. Add new prop 'isAdmin', default to false
+const TransactionModal = ({ mode, account, onClose, onSuccess, isAdmin = false }) => {
   const [amount, setAmount] = useState('');
   const [targetAccountNumber, setTargetAccountNumber] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  const titles = {
-    deposit: `Deposit to ${account.type}`,
-    withdraw: `Withdraw from ${account.type}`,
-    transfer: `Transfer from ${account.type}`,
+  // Dynamic titles based on role
+  const getTitle = () => {
+    if (mode === 'deposit') return isAdmin ? `Deposit to ${account.type}` : 'Add Money via Card';
+    if (mode === 'withdraw') return isAdmin ? `Withdraw from ${account.type}` : 'Pay Bill';
+    return `Transfer from ${account.type}`;
   };
 
   const handleSubmit = async (e) => {
@@ -32,23 +33,23 @@ const TransactionModal = ({ mode, account, onClose, onSuccess, isAdminMode = fal
         throw new Error('Please enter a valid amount.');
       }
 
-      // 2. Use the correct API based on isAdminMode
+      // 2. Use the correct API based on isAdmin
       if (mode === 'deposit') {
-        isAdminMode 
+        isAdmin
           ? await adminMakeDeposit(account.id, parsedAmount)
           : await makeDeposit(account.id, parsedAmount);
       } else if (mode === 'withdraw') {
-        isAdminMode
+        isAdmin
           ? await adminMakeWithdraw(account.id, parsedAmount)
           : await makeWithdrawal(account.id, parsedAmount);
       } else if (mode === 'transfer') {
         if (!targetAccountNumber) throw new Error('Please enter a target account number.');
-        isAdminMode
+        isAdmin
           ? await adminMakeTransfer(account.id, targetAccountNumber, parsedAmount)
           : await makeTransfer(account.id, targetAccountNumber, parsedAmount);
       }
 
-      console.log('Transaction successful (Admin: ' + isAdminMode + ')');
+      console.log('Transaction successful (Admin: ' + isAdmin + ')');
       onSuccess(); // This will close the modal and refresh data
 
     } catch (err) {
@@ -60,14 +61,36 @@ const TransactionModal = ({ mode, account, onClose, onSuccess, isAdminMode = fal
   };
 
   return (
-    <Modal title={titles[mode]} isOpen={true} onClose={onClose}>
+    <Modal title={getTitle()} isOpen={true} onClose={onClose}>
       <form onSubmit={handleSubmit} className="transaction-form">
         <p className="form-subtitle">
           Account: {account.accountNumber}
         </p>
-        <p className="form-subtitle" style={{marginTop: 0, fontWeight: 600}}>
+        <p className="form-subtitle" style={{ marginTop: 0, fontWeight: 600 }}>
           Balance: {formatCurrency(account.balance)}
         </p>
+
+        {/* Customer Deposit: Card Details */}
+        {!isAdmin && mode === 'deposit' && (
+          <>
+            <div className="form-group">
+              <label>Card Number</label>
+              <input type="text" placeholder="0000 0000 0000 0000" maxLength="19" required />
+            </div>
+            <div className="form-group">
+              <label>CVV</label>
+              <input type="text" placeholder="123" maxLength="3" required style={{ width: '80px' }} />
+            </div>
+          </>
+        )}
+
+        {/* Customer Withdraw: Biller Name */}
+        {!isAdmin && mode === 'withdraw' && (
+          <div className="form-group">
+            <label>Biller Name</label>
+            <input type="text" placeholder="e.g., Electricity, Internet" required />
+          </div>
+        )}
 
         {mode === 'transfer' && (
           <div className="form-group">

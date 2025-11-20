@@ -11,7 +11,7 @@ const MyRequestsPage = () => {
   const [error, setError] = useState('');
 
   useEffect(() => {
-    document.title = "My Requests | Laxmi Chit Fund";
+    document.title = "My Requests | The Digital Bank";
     setLoading(true);
     getMyRequests()
       .then(response => {

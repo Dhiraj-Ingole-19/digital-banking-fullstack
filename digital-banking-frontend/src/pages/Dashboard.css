@@ -4,16 +4,19 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  flex-wrap: wrap; 
+  flex-wrap: wrap;
   gap: 1rem;
   margin-bottom: 1.5rem;
   padding-bottom: 1.5rem;
   border-bottom: 1px solid var(--color-gray-medium);
 }
 
-/* ... (existing styles for .dashboard-header h1, .account-actions, .btn, .btn-success, .btn-primary) ... */
+.account-actions {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
 
-/* --- ADD THIS NEW GENERIC BUTTON STYLE --- */
 .btn-outline {
   font-family: var(--font-family);
   font-size: 1rem;
@@ -32,10 +35,49 @@
   border-color: var(--color-primary);
 }
 
-/* --- ADD THIS NEW STYLE --- */
 .transaction-history-toggle {
   text-align: center;
   margin-bottom: 1.5rem;
 }
 
-/* ... (existing styles for .account-list, .empty-state, .empty-state-icon, .empty-state p) ... */
+.empty-state {
+  text-align: center;
+  padding: 3rem 1.5rem;
+}
+
+.empty-state-icon {
+  font-size: 4rem;
+  margin-bottom: 1rem;
+}
+
+.empty-state p {
+  color: var(--color-gray-dark);
+  font-size: 1.1rem;
+  margin-bottom: 2rem;
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+  .account-actions {
+    flex-direction: column;
+    gap: 1rem;
+    width: 100%;
+  }
+
+  .account-actions button {
+    width: 100%;
+  }
+
+  .dashboard-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .empty-state {
+    padding: 2rem 1rem;
+  }
+
+  .empty-state-icon {
+    font-size: 3rem;
+  }
+}

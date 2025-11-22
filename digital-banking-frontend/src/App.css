@@ -129,3 +129,23 @@ a:hover {
 .btn-success:hover {
   background-color: #218838;
 }
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+  .main-content {
+    padding: 1rem;
+  }
+
+  input,
+  select,
+  textarea,
+  button {
+    width: 100%;
+    font-size: 1rem;
+  }
+
+  .btn {
+    width: 100%;
+    justify-content: center;
+  }
+}

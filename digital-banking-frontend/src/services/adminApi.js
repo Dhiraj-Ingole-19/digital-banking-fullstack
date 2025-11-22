@@ -1,7 +1,4 @@
 // src/services/adminApi.js
-
-// --- THIS IS THE FIX ---
-// Changed 'import api from ...' to 'import { api } from ...'
 import { api } from './api'; 
 
 /**
@@ -10,6 +7,14 @@ import { api } from './api';
  */
 export const getUserByUsername = (username) => {
   return api.get(`/admin/users/by-username/${username}`);
+};
+
+/**
+ * Gets total count of registered users.
+ * (Calls GET /api/admin/users/count)
+ */
+export const getUserCount = () => {
+  return api.get('/admin/users/count');
 };
 
 /**

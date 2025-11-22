@@ -60,6 +60,11 @@ export const deactivateAccount = (accountId) => {
   return api.post(`/user/accounts/deactivate/${accountId}`);
 };
 
+// --- NEW: Lookup Account ---
+export const lookupAccount = (username) => {
+  return api.get(`/user/accounts/lookup/${username}`);
+};
+
 // --- Transaction Service Calls ---
 export const getMyTransactions = () => {
   return api.get('/user/transactions/my-history');
@@ -77,5 +82,3 @@ export const makeTransfer = (sourceAccountId, targetAccountNumber, amount) => {
     amount 
   });
 };
-
-// --- We DO NOT export a default ---

@@ -5,6 +5,7 @@ import com.fintech.digitalbanking.dto.CreateAccountRequest;
 import com.fintech.digitalbanking.dto.UserInfoDto;
 import com.fintech.digitalbanking.entity.Account;
 import com.fintech.digitalbanking.entity.User;
+import com.fintech.digitalbanking.exception.RoleNotFoundException;
 import com.fintech.digitalbanking.service.AccountService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @RestController
@@ -25,7 +27,33 @@ public class UserAccountController {
 
     private final AccountService accountService;
 
-    // ... (All other methods like createAccount, getMyAccounts, etc. are unchanged) ...
+    @GetMapping("/lookup/{username}")
+    public ResponseEntity<Map<String, String>> lookupAccount(@PathVariable String username) {
+        User user = accountService.getUserByUsername(username);
+
+        Account targetAccount = null;
+
+        // 1. Try selected account
+        if (user.getSelectedAccountId() != null) {
+            List<Account> accounts = accountService.getAccountsByUserId(user.getId());
+            targetAccount = accounts.stream()
+                    .filter(a -> a.getId().equals(user.getSelectedAccountId()))
+                    .findFirst()
+                    .orElse(null);
+        }
+
+        // 2. If not found, try first active account
+        if (targetAccount == null) {
+            List<Account> accounts = accountService.getAccountsByUserId(user.getId());
+            targetAccount = accounts.stream()
+                    .filter(Account::isActive)
+                    .findFirst()
+                    .orElseThrow(() -> new RoleNotFoundException("No active account found for user: " + username));
+        }
+
+        return ResponseEntity.ok(Map.of("accountNumber", targetAccount.getAccountNumber()));
+    }
+
     @PostMapping
     public ResponseEntity<AccountDto> createAccount(@Valid @RequestBody CreateAccountRequest request) {
         Account created = accountService.createAccount(request.getType());
@@ -69,7 +97,6 @@ public class UserAccountController {
         return ResponseEntity.ok(accountService.getSelectedAccountBalance());
     }
 
-
     @GetMapping("/me")
     public ResponseEntity<UserInfoDto> getMyDetails(Authentication authentication) {
         String username = authentication.getName();
@@ -80,15 +107,12 @@ public class UserAccountController {
                 .map(this::toDto)
                 .collect(Collectors.toList());
 
-        // --- THIS IS THE FIX ---
-        // This logic correctly formats roles, preventing "ROLE_ROLE_ADMIN"
         List<String> roleNames = user.getRoles().stream()
                 .map(role -> {
                     String roleName = role.getName().toUpperCase();
                     return roleName.startsWith("ROLE_") ? roleName : "ROLE_" + roleName;
                 })
                 .collect(Collectors.toList());
-        // --- END OF FIX ---
 
         UserInfoDto dto = UserInfoDto.builder()
                 .id(user.getId())
@@ -96,12 +120,11 @@ public class UserAccountController {
                 .enabled(user.isEnabled())
                 .accounts(accountDtos)
                 .selectedAccountId(user.getSelectedAccountId())
-                .roles(roleNames) // Add roles to the response
+                .roles(roleNames)
                 .build();
 
         return ResponseEntity.ok(dto);
     }
-
 
     private AccountDto toDto(Account a) {
         return AccountDto.builder()

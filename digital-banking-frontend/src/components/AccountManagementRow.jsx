@@ -6,15 +6,15 @@ import { formatCurrency } from '../utils/formatters';
 import { activateAccount, deactivateAccount, selectUserAccount } from '../services/api';
 import './AccountManagementRow.css';
 
-const AccountManagementRow = ({ account, onAdminUpdate, onDeposit, onWithdraw }) => {
+const AccountManagementRow = ({ account, onAdminUpdate, onDeposit, onWithdraw, onTransfer }) => { // Added onTransfer
   const { user, fetchUser } = useAuth();
   const [loading, setLoading] = useState(false);
-  
+
   const isAdminMode = !!onAdminUpdate;
   const isSelected = !isAdminMode && user.selectedAccountId === account.id;
 
   const handleToggleActive = async (e) => {
-    e.stopPropagation(); 
+    e.stopPropagation();
     setLoading(true);
     try {
       if (account.active) {
@@ -26,7 +26,7 @@ const AccountManagementRow = ({ account, onAdminUpdate, onDeposit, onWithdraw })
       } else {
         await activateAccount(account.id);
       }
-      
+
       // Refresh the data
       if (isAdminMode) {
         onAdminUpdate(); // Re-run the search in the admin dashboard
@@ -43,7 +43,7 @@ const AccountManagementRow = ({ account, onAdminUpdate, onDeposit, onWithdraw })
   };
 
   const handleSelect = async () => {
-    if (isSelected || !account.active || isAdminMode) return; 
+    if (isSelected || !account.active || isAdminMode) return;
     setLoading(true);
     try {
       await selectUserAccount(account.id);
@@ -62,7 +62,7 @@ const AccountManagementRow = ({ account, onAdminUpdate, onDeposit, onWithdraw })
         <span className="account-type">{account.type.charAt(0) + account.type.slice(1).toLowerCase()}</span>
         <span className="account-number">{account.accountNumber}</span>
       </div>
-      
+
       {/* This <div> is now required to match the grid columns */}
       <div className="account-balance-admin">
         {isAdminMode && formatCurrency(account.balance)}
@@ -73,12 +73,12 @@ const AccountManagementRow = ({ account, onAdminUpdate, onDeposit, onWithdraw })
           {account.active ? 'Active' : 'Inactive'}
         </span>
       </div>
-      
+
       <div className="account-actions">
         {/* --- THIS IS THE FIX --- */}
         {/* User-mode gets "Set as Default" */}
         {!isAdminMode && (
-          <button 
+          <button
             className="btn-select"
             onClick={handleSelect}
             disabled={isSelected || !account.active || loading}
@@ -86,15 +86,16 @@ const AccountManagementRow = ({ account, onAdminUpdate, onDeposit, onWithdraw })
             {isSelected ? 'Selected' : (account.active ? 'Set as Default' : 'Inactive')}
           </button>
         )}
-        
-        {/* Admin-mode gets "Deposit/Withdraw" */}
+
+        {/* Admin-mode gets "Deposit/Withdraw/Transfer" */}
         {isAdminMode && (
           <>
             <button className="btn-action" onClick={() => onDeposit(account)} disabled={loading || !account.active}>Deposit</button>
             <button className="btn-action" onClick={() => onWithdraw(account)} disabled={loading || !account.active}>Withdraw</button>
+            <button className="btn-action" onClick={() => onTransfer(account)} disabled={loading || !account.active}>Transfer</button>
           </>
         )}
-        
+
         {/* Both modes get "Activate/Deactivate" */}
         <button
           className={`btn-toggle ${account.active ? 'btn-deactivate' : 'btn-activate'}`}

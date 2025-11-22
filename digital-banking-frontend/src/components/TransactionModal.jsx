@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import Modal from './Modal';
 // Import BOTH user and admin APIs
-import { makeDeposit, makeWithdrawal, makeTransfer } from '../services/api';
+import { makeDeposit, makeWithdrawal, makeTransfer, lookupAccount } from '../services/api';
 import { adminMakeDeposit, adminMakeWithdraw, adminMakeTransfer } from '../services/adminApi';
 import { formatCurrency } from '../utils/formatters';
 import './TransactionModal.css';
@@ -15,11 +15,42 @@ const TransactionModal = ({ mode, account, onClose, onSuccess, isAdmin = false }
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
+  // Lookup state
+  const [isLookingUp, setIsLookingUp] = useState(false);
+  const [lookupMessage, setLookupMessage] = useState('');
+
   // Dynamic titles based on role
   const getTitle = () => {
     if (mode === 'deposit') return isAdmin ? `Deposit to ${account.type}` : 'Add Money via Card';
     if (mode === 'withdraw') return isAdmin ? `Withdraw from ${account.type}` : 'Pay Bill';
     return `Transfer from ${account.type}`;
+  };
+
+  const handleLookup = async () => {
+    if (!targetAccountNumber) return;
+
+    // If it looks like an account number (starts with ACC), don't look up
+    if (targetAccountNumber.toUpperCase().startsWith('ACC')) {
+      return;
+    }
+
+    setIsLookingUp(true);
+    setLookupMessage('');
+    setError('');
+
+    try {
+      const response = await lookupAccount(targetAccountNumber);
+      const { accountNumber } = response.data;
+      setTargetAccountNumber(accountNumber);
+      setLookupMessage(`✓ Found: ${targetAccountNumber}'s account`);
+    } catch (err) {
+      console.error("Lookup failed:", err);
+      setLookupMessage('');
+      // Don't clear the input, just show error
+      setError(`❌ User '${targetAccountNumber}' not found or has no active account.`);
+    } finally {
+      setIsLookingUp(false);
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -94,14 +125,28 @@ const TransactionModal = ({ mode, account, onClose, onSuccess, isAdmin = false }
 
         {mode === 'transfer' && (
           <div className="form-group">
-            <label htmlFor="targetAccount">Target Account Number</label>
-            <input
-              type="text"
-              id="targetAccount"
-              value={targetAccountNumber}
-              onChange={(e) => setTargetAccountNumber(e.target.value)}
-              placeholder="e.g., ACC123456789"
-            />
+            <label htmlFor="targetAccount">Target (Username or Account #)</label>
+            <div style={{ display: 'flex', gap: '0.5rem' }}>
+              <input
+                type="text"
+                id="targetAccount"
+                value={targetAccountNumber}
+                onChange={(e) => setTargetAccountNumber(e.target.value)}
+                onBlur={handleLookup} // Auto-lookup on blur
+                placeholder="e.g., dhiraj or ACC..."
+                style={{ flexGrow: 1 }}
+              />
+              <button
+                type="button"
+                className="btn-outline"
+                onClick={handleLookup}
+                disabled={isLookingUp || !targetAccountNumber}
+                style={{ padding: '0.5rem', fontSize: '0.9rem' }}
+              >
+                {isLookingUp ? '...' : '🔍'}
+              </button>
+            </div>
+            {lookupMessage && <p style={{ color: 'var(--color-success)', fontSize: '0.85rem', marginTop: '0.25rem' }}>{lookupMessage}</p>}
           </div>
         )}
 

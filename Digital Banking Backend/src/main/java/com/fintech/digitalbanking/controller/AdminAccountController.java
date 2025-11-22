@@ -4,6 +4,7 @@ import com.fintech.digitalbanking.dto.AccountDto;
 import com.fintech.digitalbanking.dto.UserInfoDto;
 import com.fintech.digitalbanking.entity.Account;
 import com.fintech.digitalbanking.entity.User;
+import com.fintech.digitalbanking.repository.UserRepository;
 import com.fintech.digitalbanking.service.AccountService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -14,21 +15,26 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/api/admin") // CHANGED: More generic base path for admin functions
+@RequestMapping("/api/admin")
 @RequiredArgsConstructor
 @PreAuthorize("hasRole('ADMIN')")
 public class AdminAccountController {
 
     private final AccountService accountService;
+    private final UserRepository userRepository;
 
-    @GetMapping("/accounts/{userId}") // CHANGED: Path is now more specific
+    @GetMapping("/users/count")
+    public ResponseEntity<Long> getUserCount() {
+        return ResponseEntity.ok(userRepository.count());
+    }
+
+    @GetMapping("/accounts/{userId}")
     public ResponseEntity<List<AccountDto>> getAccountsByUserId(@PathVariable Long userId) {
         List<Account> accounts = accountService.getAccountsByUserId(userId);
         List<AccountDto> dtos = accounts.stream().map(this::toDto).collect(Collectors.toList());
         return ResponseEntity.ok(dtos);
     }
 
-    // REPLACED: The old POST method is replaced with this proper GET method
     @GetMapping("/users/by-username/{username}")
     public ResponseEntity<UserInfoDto> getUserDetailsByUsername(@PathVariable String username) {
         User user = accountService.getUserByUsername(username);

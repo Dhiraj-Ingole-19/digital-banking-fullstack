@@ -5,29 +5,28 @@ import { getUserByUsername } from '../services/adminApi';
 import AccountManagementRow from './AccountManagementRow';
 import TransactionModal from './TransactionModal';
 import TransactionHistory from './TransactionHistory';
-// We'll re-use the admin dashboard CSS
-import '../pages/AdminDashboardPage.css'; 
+import '../pages/AdminDashboardPage.css';
 
 const AdminUserSearch = () => {
   const [searchUsername, setSearchUsername] = useState('');
   const [foundUser, setFoundUser] = useState(null);
   const [loadingSearch, setLoadingSearch] = useState(false);
   const [searchError, setSearchError] = useState('');
-  
+
   const [modal, setModal] = useState({ isOpen: false, mode: '', account: null });
   const [showHistoryForUser, setShowHistoryForUser] = useState(false);
 
   const handleSearch = async (e) => {
-    if (e) e.preventDefault(); 
+    if (e) e.preventDefault();
     if (!searchUsername) return;
-    
+
     setLoadingSearch(true);
     setSearchError('');
     setFoundUser(null);
-    setShowHistoryForUser(false); 
+    setShowHistoryForUser(false);
     try {
       const response = await getUserByUsername(searchUsername);
-      setFoundUser(response.data); 
+      setFoundUser(response.data);
     } catch (err) {
       console.error("User search failed:", err);
       setSearchError(err.response?.data?.message || 'User not found');
@@ -35,21 +34,21 @@ const AdminUserSearch = () => {
       setLoadingSearch(false);
     }
   };
-  
+
   const openTransactionModal = (mode, account) => {
     setModal({ isOpen: true, mode: mode, account: account });
   };
 
   const onTransactionSuccess = () => {
-    setModal({ isOpen: false, mode: '', account: null }); 
-    handleSearch(); // Refresh the user's data (and balance)
+    setModal({ isOpen: false, mode: '', account: null });
+    handleSearch();
   };
 
   return (
     <div className="admin-section">
       <h2>Find User</h2>
       <form className="user-search-form" onSubmit={handleSearch}>
-        <input 
+        <input
           type="text"
           placeholder="Search by exact username..."
           value={searchUsername}
@@ -69,7 +68,7 @@ const AdminUserSearch = () => {
               {foundUser.enabled ? 'Enabled' : 'Disabled'}
             </span>
           </div>
-          
+
           <div className="account-list-header">
             <span>Account</span>
             <span>Balance</span>
@@ -79,12 +78,13 @@ const AdminUserSearch = () => {
           <div className="account-management-list">
             {foundUser.accounts.length > 0 ? (
               foundUser.accounts.map(account => (
-                <AccountManagementRow 
-                  key={account.id} 
-                  account={account} 
-                  onAdminUpdate={handleSearch} 
+                <AccountManagementRow
+                  key={account.id}
+                  account={account}
+                  onAdminUpdate={handleSearch}
                   onDeposit={() => openTransactionModal('deposit', account)}
                   onWithdraw={() => openTransactionModal('withdraw', account)}
+                  onTransfer={() => openTransactionModal('transfer', account)} // Added Transfer
                 />
               ))
             ) : (
@@ -92,9 +92,9 @@ const AdminUserSearch = () => {
             )}
           </div>
 
-          <div className="transaction-history-toggle" style={{marginTop: '1.5rem'}}>
-            <button 
-              className="btn-outline" 
+          <div className="transaction-history-toggle" style={{ marginTop: '1.5rem' }}>
+            <button
+              className="btn-outline"
               onClick={() => setShowHistoryForUser(!showHistoryForUser)}
             >
               {showHistoryForUser ? 'Hide' : 'Show'} User Transaction History
@@ -105,12 +105,12 @@ const AdminUserSearch = () => {
             <TransactionHistory
               isAdminMode={true}
               userId={foundUser.id}
-              limit={5} 
+              limit={5}
             />
           )}
         </div>
       )}
-      
+
       {/* --- Transaction Modal --- */}
       {modal.isOpen && (
         <TransactionModal

@@ -21,8 +21,8 @@ const TransactionModal = ({ mode, account, onClose, onSuccess, isAdmin = false }
 
   // Dynamic titles based on role
   const getTitle = () => {
-    if (mode === 'deposit') return isAdmin ? `Deposit to ${account.type}` : 'Add Money via Card';
-    if (mode === 'withdraw') return isAdmin ? `Withdraw from ${account.type}` : 'Pay Bill';
+    if (mode === 'deposit') return isAdmin ? `Cash Deposit to ${account.type}` : 'Add Money via Card';
+    if (mode === 'withdraw') return isAdmin ? `Cash Withdraw from ${account.type}` : 'Pay Bill';
     return `Transfer from ${account.type}`;
   };
 
@@ -101,7 +101,7 @@ const TransactionModal = ({ mode, account, onClose, onSuccess, isAdmin = false }
           Balance: {formatCurrency(account.balance)}
         </p>
 
-        {/* Customer Deposit: Card Details */}
+        {/* Customer Deposit: Card Details - HIDE IF ADMIN */}
         {!isAdmin && mode === 'deposit' && (
           <>
             <div className="form-group">
@@ -115,7 +115,7 @@ const TransactionModal = ({ mode, account, onClose, onSuccess, isAdmin = false }
           </>
         )}
 
-        {/* Customer Withdraw: Biller Name */}
+        {/* Customer Withdraw: Biller Name - HIDE IF ADMIN */}
         {!isAdmin && mode === 'withdraw' && (
           <div className="form-group">
             <label>Biller Name</label>

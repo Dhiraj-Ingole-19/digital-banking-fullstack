@@ -18,6 +18,14 @@ export const getUserCount = () => {
 };
 
 /**
+ * Gets all registered users.
+ * (Calls GET /api/admin/users)
+ */
+export const getAllUsers = () => {
+  return api.get('/admin/users');
+};
+
+/**
  * Gets all transactions for a specific user ID.
  * (Calls GET /api/admin/transactions/user/{userId})
  */

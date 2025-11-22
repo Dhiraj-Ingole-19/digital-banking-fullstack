@@ -28,6 +28,18 @@ public class AdminAccountController {
         return ResponseEntity.ok(userRepository.count());
     }
 
+    @GetMapping("/users")
+    public ResponseEntity<List<UserInfoDto>> getAllUsers() {
+        List<User> users = userRepository.findAll();
+        List<UserInfoDto> dtos = users.stream().map(user -> UserInfoDto.builder()
+                .id(user.getId())
+                .username(user.getUsername())
+                .enabled(user.isEnabled())
+                .build())
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(dtos);
+    }
+
     @GetMapping("/accounts/{userId}")
     public ResponseEntity<List<AccountDto>> getAccountsByUserId(@PathVariable Long userId) {
         List<Account> accounts = accountService.getAccountsByUserId(userId);

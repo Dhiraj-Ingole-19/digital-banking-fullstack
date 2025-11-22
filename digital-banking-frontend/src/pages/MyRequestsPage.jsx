@@ -27,10 +27,24 @@ const MyRequestsPage = () => {
       });
   }, []);
 
-  const getStatusClass = (status) => {
-    if (status === 'APPROVED') return 'status-active';
-    if (status === 'REJECTED') return 'status-inactive';
-    return 'status-pending';
+  const getStatusBadge = (status) => {
+    let color = '#6c757d'; // Default gray
+    if (status === 'APPROVED') color = '#28a745'; // Green
+    if (status === 'REJECTED') color = '#dc3545'; // Red
+    if (status === 'PENDING') color = '#ffc107'; // Yellow
+
+    return (
+      <span style={{
+        backgroundColor: color,
+        color: status === 'PENDING' ? 'black' : 'white',
+        padding: '0.25rem 0.5rem',
+        borderRadius: '4px',
+        fontSize: '0.8rem',
+        fontWeight: 'bold'
+      }}>
+        {status}
+      </span>
+    );
   };
 
   const renderContent = () => {
@@ -48,19 +62,23 @@ const MyRequestsPage = () => {
       );
     }
     return (
-      <div className="request-list">
+      <div className="request-list" style={{ display: 'grid', gap: '1rem' }}>
         {requests.map(req => (
-          <div key={req.id} className="request-card">
-            <div className="request-card-header">
-              <h3>Request for Tx ID: {req.transactionId}</h3>
-              <span className={`status ${getStatusClass(req.status)}`}>
-                {req.status}
-              </span>
+          <div key={req.id} className="request-card" style={{
+            border: '1px solid #ddd',
+            borderRadius: '8px',
+            padding: '1rem',
+            backgroundColor: 'white',
+            boxShadow: '0 2px 4px rgba(0,0,0,0.05)'
+          }}>
+            <div className="request-card-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
+              <h3 style={{ margin: 0, fontSize: '1.1rem' }}>Request for Tx ID: {req.transactionId}</h3>
+              {getStatusBadge(req.status)}
             </div>
-            <p className="request-card-reason">
-              <strong>Your Reason:</strong> {req.reason}
+            <p className="request-card-reason" style={{ margin: '0.5rem 0', color: '#555' }}>
+              <strong>Reason:</strong> {req.reason}
             </p>
-            <span className="request-card-date">
+            <span className="request-card-date" style={{ fontSize: '0.85rem', color: '#888' }}>
               Submitted: {formatDateTime(req.createdAt)}
             </span>
           </div>
@@ -70,9 +88,9 @@ const MyRequestsPage = () => {
   };
 
   return (
-    <div className="my-requests-container">
+    <div className="my-requests-container" style={{ padding: '2rem', maxWidth: '800px', margin: '0 auto' }}>
       <h1>My Submitted Requests</h1>
-      <p>Track the status of your transaction reports here.</p>
+      <p style={{ marginBottom: '2rem', color: '#666' }}>Track the status of your transaction reports here.</p>
       {renderContent()}
     </div>
   );

@@ -4,12 +4,9 @@ import axios from 'axios';
 
 const API_URL = 'https://digital-banking-fullstack.onrender.com/api';
 
-// --- THIS IS THE FIX (Part 1) ---
-// We create 'api' and immediately export it as a named constant
 export const api = axios.create({
   baseURL: API_URL,
 });
-// --- END OF FIX ---
 
 api.interceptors.request.use(
   (config) => {
@@ -37,7 +34,7 @@ export const getCurrentUser = () => {
   return api.get('/user/accounts/me');
 };
 export const getMyRequests = () => {
-  return api.get('/api/user/requests');
+  return api.get('/user/requests');
 };
 export const requestRollback = (transactionId, reason) => {
   return api.post(`/user/requests/rollback/${transactionId}`, { reason });

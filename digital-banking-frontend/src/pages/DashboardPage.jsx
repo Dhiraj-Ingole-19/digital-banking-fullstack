@@ -4,7 +4,7 @@ import React, { useState, useMemo, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { createNewAccount } from '../services/api';
 import AccountSelector from '../components/AccountSelector';
-import AccountSwitchModal from '../components/AccountSwitchModal'; // <-- Re-import
+import AccountSwitchModal from '../components/AccountSwitchModal';
 import BalanceCard from '../components/BalanceCard';
 import QuickActions from '../components/QuickActions';
 import TransactionModal from '../components/TransactionModal';
@@ -18,7 +18,7 @@ const DashboardPage = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [modal, setModal] = useState(null);
-  const [isSwitchModalOpen, setIsSwitchModalOpen] = useState(false); // <-- Re-add state
+  const [isSwitchModalOpen, setIsSwitchModalOpen] = useState(false);
   const [showHistory, setShowHistory] = useState(false);
   const [historyKey, setHistoryKey] = useState(user?.selectedAccountId || 1);
 
@@ -39,6 +39,19 @@ const DashboardPage = () => {
       setShowHistory(false);
     }
   }, [user?.selectedAccountId]);
+
+  // Back Button Guard
+  useEffect(() => {
+    const handlePopState = (event) => {
+      const confirmLeave = window.confirm("Are you sure you want to leave? You will be logged out.");
+      if (!confirmLeave) {
+        window.history.pushState(null, "", window.location.pathname);
+      }
+    };
+    window.history.pushState(null, "", window.location.pathname);
+    window.addEventListener("popstate", handlePopState);
+    return () => window.removeEventListener("popstate", handlePopState);
+  }, []);
 
   const handleCreateAccount = async (accountType) => {
     setLoading(true);
@@ -135,7 +148,6 @@ const DashboardPage = () => {
         />
       )}
 
-      {/* --- Re-add the Switch Modal --- */}
       <AccountSwitchModal
         isOpen={isSwitchModalOpen}
         onClose={() => setIsSwitchModalOpen(false)}

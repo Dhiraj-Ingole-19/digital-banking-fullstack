@@ -55,6 +55,19 @@ const AdminDashboardPage = () => {
     }
   }, [adminUser]);
 
+  // Back Button Guard
+  useEffect(() => {
+    const handlePopState = (event) => {
+      const confirmLeave = window.confirm("Are you sure you want to leave? You will be logged out.");
+      if (!confirmLeave) {
+        window.history.pushState(null, "", window.location.pathname);
+      }
+    };
+    window.history.pushState(null, "", window.location.pathname);
+    window.addEventListener("popstate", handlePopState);
+    return () => window.removeEventListener("popstate", handlePopState);
+  }, []);
+
   const handleToggleUserList = async () => {
     if (!showUserList) {
       setLoadingUsers(true);

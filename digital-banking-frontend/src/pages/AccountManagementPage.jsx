@@ -81,18 +81,20 @@ const AccountManagementPage = () => {
             {/* --- NEW: Open Account Buttons --- */}
             <div style={{ marginTop: '1.5rem', display: 'flex', gap: '1rem' }}>
               <button
-                className="btn-outline"
+                className="btn-success"
                 onClick={() => handleCreateAccount('SAVINGS')}
                 disabled={creating}
+                style={{ padding: '0.75rem 1.5rem', border: 'none', borderRadius: '4px', cursor: 'pointer', backgroundColor: '#28a745', color: 'white', fontWeight: 'bold' }}
               >
-                + Open Savings
+                + Create Savings Account
               </button>
               <button
-                className="btn-outline"
+                className="btn-primary"
                 onClick={() => handleCreateAccount('CURRENT')}
                 disabled={creating}
+                style={{ padding: '0.75rem 1.5rem', border: 'none', borderRadius: '4px', cursor: 'pointer', backgroundColor: '#007bff', color: 'white', fontWeight: 'bold' }}
               >
-                + Open Current
+                + Create Current Account
               </button>
             </div>
           </div>

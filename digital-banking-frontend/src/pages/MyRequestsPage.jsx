@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { getMyRequests } from '../services/api';
 import { formatDateTime } from '../utils/formatters';
-import './MyRequestsPage.css'; // We'll create this next
+import './MyRequestsPage.css';
 
 const MyRequestsPage = () => {
   const [requests, setRequests] = useState([]);
@@ -15,6 +15,7 @@ const MyRequestsPage = () => {
     setLoading(true);
     getMyRequests()
       .then(response => {
+        console.log("Requests fetched:", response.data);
         setRequests(response.data);
       })
       .catch(err => {
@@ -39,7 +40,7 @@ const MyRequestsPage = () => {
     if (error) {
       return <p className="form-error">{error}</p>;
     }
-    if (requests.length === 0) {
+    if (!requests || requests.length === 0) {
       return (
         <div className="empty-state-small">
           <p>You have not submitted any requests.</p>

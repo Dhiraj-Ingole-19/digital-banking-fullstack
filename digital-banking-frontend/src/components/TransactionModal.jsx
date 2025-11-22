@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import Modal from './Modal';
-// Import BOTH user and admin APIs
+import { useAuth } from '../context/AuthContext';
 import { makeDeposit, makeWithdrawal, makeTransfer, lookupAccount } from '../services/api';
 import { adminMakeDeposit, adminMakeWithdraw, adminMakeTransfer } from '../services/adminApi';
 import { formatCurrency } from '../utils/formatters';
@@ -10,6 +10,7 @@ import './TransactionModal.css';
 
 // 1. Add new prop 'isAdmin', default to false
 const TransactionModal = ({ mode, account, onClose, onSuccess, isAdmin = false }) => {
+  const { user } = useAuth();
   const [amount, setAmount] = useState('');
   const [targetAccountNumber, setTargetAccountNumber] = useState('');
   const [loading, setLoading] = useState(false);
@@ -19,10 +20,13 @@ const TransactionModal = ({ mode, account, onClose, onSuccess, isAdmin = false }
   const [isLookingUp, setIsLookingUp] = useState(false);
   const [lookupMessage, setLookupMessage] = useState('');
 
+  // Strict Logic for Teller Mode
+  const isTeller = isAdmin || (user?.roles?.includes('ROLE_ADMIN'));
+
   // Dynamic titles based on role
   const getTitle = () => {
-    if (mode === 'deposit') return isAdmin ? `Cash Deposit to ${account.type}` : 'Add Money via Card';
-    if (mode === 'withdraw') return isAdmin ? `Cash Withdraw from ${account.type}` : 'Pay Bill';
+    if (mode === 'deposit') return isTeller ? `Teller Deposit to ${account.type}` : 'Add Money via Card';
+    if (mode === 'withdraw') return isTeller ? `Teller Withdraw from ${account.type}` : 'Pay Bill';
     return `Transfer from ${account.type}`;
   };
 
@@ -66,21 +70,21 @@ const TransactionModal = ({ mode, account, onClose, onSuccess, isAdmin = false }
 
       // 2. Use the correct API based on isAdmin
       if (mode === 'deposit') {
-        isAdmin
+        isTeller
           ? await adminMakeDeposit(account.id, parsedAmount)
           : await makeDeposit(account.id, parsedAmount);
       } else if (mode === 'withdraw') {
-        isAdmin
+        isTeller
           ? await adminMakeWithdraw(account.id, parsedAmount)
           : await makeWithdrawal(account.id, parsedAmount);
       } else if (mode === 'transfer') {
         if (!targetAccountNumber) throw new Error('Please enter a target account number.');
-        isAdmin
+        isTeller
           ? await adminMakeTransfer(account.id, targetAccountNumber, parsedAmount)
           : await makeTransfer(account.id, targetAccountNumber, parsedAmount);
       }
 
-      console.log('Transaction successful (Admin: ' + isAdmin + ')');
+      console.log('Transaction successful (Teller: ' + isTeller + ')');
       onSuccess(); // This will close the modal and refresh data
 
     } catch (err) {
@@ -101,8 +105,8 @@ const TransactionModal = ({ mode, account, onClose, onSuccess, isAdmin = false }
           Balance: {formatCurrency(account.balance)}
         </p>
 
-        {/* Customer Deposit: Card Details - HIDE IF ADMIN */}
-        {!isAdmin && mode === 'deposit' && (
+        {/* Customer Deposit: Card Details - HIDE IF TELLER */}
+        {!isTeller && mode === 'deposit' && (
           <>
             <div className="form-group">
               <label>Card Number</label>
@@ -115,8 +119,8 @@ const TransactionModal = ({ mode, account, onClose, onSuccess, isAdmin = false }
           </>
         )}
 
-        {/* Customer Withdraw: Biller Name - HIDE IF ADMIN */}
-        {!isAdmin && mode === 'withdraw' && (
+        {/* Customer Withdraw: Biller Name - HIDE IF TELLER */}
+        {!isTeller && mode === 'withdraw' && (
           <div className="form-group">
             <label>Biller Name</label>
             <input type="text" placeholder="e.g., Electricity, Internet" required />

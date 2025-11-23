@@ -1,6 +1,6 @@
 // src/pages/LoginPage.jsx
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import './Auth.css';
@@ -9,25 +9,28 @@ const LoginPage = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
-  const { login, isAuthLoading } = useAuth(); // Get isAuthLoading
+  const { login, isAuthLoading, isAuthenticated, user } = useAuth();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (isAuthenticated && user) {
+      const target = user.roles.includes('ROLE_ADMIN') ? '/admin/dashboard' : '/dashboard';
+      navigate(target, { replace: true });
+    }
+  }, [isAuthenticated, user, navigate]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
     try {
-      // 1. The login function now returns the user object
       const user = await login(username, password);
-
-      // 2. Check the user object for roles
       if (user) {
         if (user.roles && user.roles.includes('ROLE_ADMIN')) {
-          navigate('/admin/dashboard'); // Redirect Admin
+          navigate('/admin/dashboard');
         } else {
-          navigate('/dashboard'); // Redirect User
+          navigate('/dashboard');
         }
       } else {
-        // This case handles if fetchUser failed
         setError('Login successful, but failed to fetch user details.');
       }
     } catch (err) {
@@ -47,7 +50,6 @@ const LoginPage = () => {
         <p className="auth-subheader">Please log in to your account.</p>
 
         <form className="auth-form" onSubmit={handleSubmit}>
-          {/* ... (form-group username) ... */}
           <div className="form-group">
             <label htmlFor="username">Username</label>
             <input
@@ -56,7 +58,7 @@ const LoginPage = () => {
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               required
-              disabled={isAuthLoading} // Disable form while logging in
+              disabled={isAuthLoading}
             />
           </div>
 
@@ -68,7 +70,7 @@ const LoginPage = () => {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
-              disabled={isAuthLoading} // Disable form while logging in
+              disabled={isAuthLoading}
             />
           </div>
 

@@ -1,6 +1,7 @@
 package com.fintech.digitalbanking.controller;
 
 import com.fintech.digitalbanking.dto.CreateRollbackRequestDto;
+import com.fintech.digitalbanking.dto.RequestDto;
 import com.fintech.digitalbanking.entity.RollbackRequest;
 import com.fintech.digitalbanking.entity.Transaction;
 import com.fintech.digitalbanking.entity.User;
@@ -14,7 +15,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List; // <-- THIS IS THE FIX
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/user/requests")
@@ -27,10 +29,11 @@ public class UserRequestController {
     private final SecurityUtil securityUtil;
 
     @GetMapping
-    public ResponseEntity<?> getMyRequests() {
+    public ResponseEntity<List<RequestDto>> getMyRequests() {
         User user = securityUtil.getCurrentUserEntity();
         List<RollbackRequest> requests = requestRepository.findByRequestingUserOrderByCreatedAtDesc(user);
-        return ResponseEntity.ok(requests);
+        // Convert to DTO to avoid recursion/serialization errors
+        return ResponseEntity.ok(requests.stream().map(this::toDto).collect(Collectors.toList()));
     }
 
     @PostMapping("/rollback/{transactionId}")
@@ -58,5 +61,19 @@ public class UserRequestController {
         requestRepository.save(newRequest);
 
         return ResponseEntity.ok("Rollback request submitted successfully.");
+    }
+
+    // Helper method
+    private RequestDto toDto(RollbackRequest req) {
+        return RequestDto.builder()
+                .id(req.getId())
+                .transactionId(req.getTransaction().getId())
+                .username(req.getRequestingUser().getUsername())
+                .reason(req.getReason())
+                .status(req.getStatus())
+                .createdAt(req.getCreatedAt())
+                .transactionType(req.getTransaction().getType())
+                .transactionAmount(req.getTransaction().getAmount())
+                .build();
     }
 }

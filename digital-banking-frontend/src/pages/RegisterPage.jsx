@@ -1,16 +1,23 @@
 // src/pages/RegisterPage.jsx
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import './Auth.css'; // <-- 1. IMPORT THE NEW CSS
+import './Auth.css';
 
 const RegisterPage = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
-  const { register } = useAuth();
+  const { register, isAuthenticated, user } = useAuth();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (isAuthenticated && user) {
+      const target = user.roles.includes('ROLE_ADMIN') ? '/admin/dashboard' : '/dashboard';
+      navigate(target, { replace: true });
+    }
+  }, [isAuthenticated, user, navigate]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -28,7 +35,6 @@ const RegisterPage = () => {
     }
   };
 
-  // 2. USE THE NEW CSS CLASSES
   return (
     <div className="auth-container">
       <div className="auth-card">

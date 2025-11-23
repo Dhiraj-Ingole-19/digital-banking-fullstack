@@ -15,17 +15,25 @@ const AllTransactionsPage = React.lazy(() => import('./pages/AllTransactionsPage
 const AccountManagementPage = React.lazy(() => import('./pages/AccountManagementPage.jsx'));
 const MyRequestsPage = React.lazy(() => import('./pages/MyRequestsPage.jsx'));
 const AdminDashboardPage = React.lazy(() => import('./pages/AdminDashboardPage.jsx'));
+const AboutPage = React.lazy(() => import('./pages/AboutPage.jsx'));
 
 // This layout is for PRIVATE pages (dashboard, settings, etc.)
+import Sidebar from './components/Sidebar.jsx';
+import BottomNav from './components/BottomNav.jsx';
+
 const AppLayout = ({ children }) => {
   return (
-    <div className="app-layout">
+    <div className="modern-layout">
       <Navbar />
-      <main className="main-content">
-        <Suspense fallback={<div className="loading-spinner">Loading App...</div>}>
-          {children}
-        </Suspense>
-      </main>
+      <div className="content-wrapper">
+        <Sidebar className="desktop-only" />
+        <main className="page-content">
+          <Suspense fallback={<div className="loading-spinner">Loading App...</div>}>
+            {children}
+          </Suspense>
+        </main>
+      </div>
+      <BottomNav className="mobile-only" />
     </div>
   );
 };
@@ -35,6 +43,7 @@ function App() {
     <Routes>
       {/* --- PUBLIC ROUTES --- */}
       <Route path="/" element={<HomePage />} />
+      <Route path="/about" element={<AboutPage />} />
       <Route path="/login" element={<LoginPage />} />
       <Route path="/register" element={<RegisterPage />} />
 

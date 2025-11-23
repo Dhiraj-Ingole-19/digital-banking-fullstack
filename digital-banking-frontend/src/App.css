@@ -4,22 +4,36 @@
    Global Variables (Your Theme)
    ================================= */
 :root {
-  --color-primary: #0a4d98;
-  --color-primary-dark: #083b75;
+  --color-primary: #0F2027;
+  --color-primary-dark: #203A43;
   --color-secondary: #f0f8ff;
-  /* AliceBlue - a very light blue */
   --color-white: #ffffff;
-  --color-gray-light: #f4f7f6;
+  --color-gray-light: #f8f9fa;
+  /* Softer off-white */
   --color-gray-medium: #d3d9de;
   --color-gray-dark: #333333;
   --color-text: #2c3e50;
   --color-success: #28a745;
   --color-danger: #dc3545;
 
-  --font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --gradient-primary: linear-gradient(135deg, #0F2027 0%, #203A43 50%, #2C5364 100%);
+
+  --font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+
   --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
   --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-  --border-radius: 8px;
+  --shadow-card: 0 10px 30px -10px rgba(0, 0, 0, 0.1);
+
+  --border-radius: 12px;
+  /* Slightly rounder */
+}
+
+.glass-panel {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: var(--shadow-card);
 }
 
 /* =================================
@@ -77,24 +91,26 @@ a:hover {
 /* =================================
    Main App Layout
    ================================= */
-.app-layout {
+.modern-layout {
   display: flex;
   flex-direction: column;
-  height: 100vh;
-  width: 100%;
+  min-height: 100vh;
 }
 
-.main-content {
-  flex-grow: 1;
-  /* This makes the content area fill all available space */
-  width: 100%;
-  max-width: 1280px;
-  /* Sets a max width for large desktops */
-  margin: 0 auto;
-  /* Centers the content */
-  padding: 1.5rem;
-  overflow-y: auto;
-  /* Adds scrolling only to the content area */
+.content-wrapper {
+  display: flex;
+  flex: 1;
+  position: relative;
+}
+
+.page-content {
+  flex: 1;
+  padding: 2rem;
+  margin-left: 250px;
+  /* Sidebar width */
+  background-color: var(--color-gray-light);
+  min-height: calc(100vh - 64px);
+  /* Minus navbar */
 }
 
 /* Global Button Styles */
@@ -110,15 +126,18 @@ a:hover {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  gap: 0.5rem;
 }
 
 .btn-primary {
-  background-color: var(--color-primary);
+  background: var(--gradient-primary);
   color: var(--color-white);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
 }
 
 .btn-primary:hover {
-  background-color: var(--color-primary-dark);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
 }
 
 .btn-success {
@@ -130,10 +149,41 @@ a:hover {
   background-color: #218838;
 }
 
+.btn-outline {
+  background: transparent;
+  border: 1px solid var(--color-gray-medium);
+  color: var(--color-text);
+}
+
+.btn-outline:hover {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+/* Responsive Utilities */
+.desktop-only {
+  display: flex;
+}
+
+.mobile-only {
+  display: none;
+}
+
 /* Mobile Responsiveness */
 @media (max-width: 768px) {
-  .main-content {
+  .page-content {
+    margin-left: 0;
     padding: 1rem;
+    padding-bottom: 80px;
+    /* Space for bottom nav */
+  }
+
+  .desktop-only {
+    display: none;
+  }
+
+  .mobile-only {
+    display: flex;
   }
 
   input,

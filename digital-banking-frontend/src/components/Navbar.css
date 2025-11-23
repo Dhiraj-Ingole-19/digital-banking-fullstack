@@ -1,99 +1,65 @@
-/* src/components/Navbar.css */
-
 .navbar {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1rem 1.5rem;
+  padding: 0.75rem 1.5rem;
   background-color: var(--color-white);
-  border-bottom: 1px solid var(--color-gray-medium);
-  box-shadow: var(--shadow-sm);
-  width: 100%;
+  color: var(--color-text);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  height: 64px;
 }
 
 .navbar-brand {
-  font-size: 1.5rem;
+  font-size: 1.25rem;
   font-weight: 700;
   color: var(--color-primary);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
   text-decoration: none;
+}
+
+.brand-icon {
+  color: var(--color-primary);
 }
 
 .navbar-user-menu {
   display: flex;
   align-items: center;
-  gap: 1.5rem;
+  gap: 1rem;
 }
 
 .navbar-welcome-text {
-  font-weight: 600;
+  font-size: 0.9rem;
   color: var(--color-text);
 }
 
-.navbar-settings-link {
-  font-weight: 600;
-  color: var(--color-primary);
-  text-decoration: none;
-  padding: 0.5rem 0.75rem;
-  border-radius: var(--border-radius);
-  transition: all 0.2s;
-}
-
-.navbar-settings-link:hover {
-  background-color: var(--color-secondary);
-  text-decoration: none;
-}
-
-/* --- THIS IS THE FIX --- */
-/* Updated styles for the Log Out button */
 .navbar-logout-btn {
-  font-family: var(--font-family);
-  font-size: 0.9rem;
-  font-weight: 600;
-  padding: 0.5rem 1rem;
-
-  /* Change to red "danger" color */
+  background: none;
+  border: none;
   color: var(--color-danger);
-  background-color: var(--color-white);
-  border: 2px solid var(--color-danger);
-
-  border-radius: var(--border-radius);
+  font-weight: 600;
   cursor: pointer;
-  transition: all 0.2s ease-in-out;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem;
+  border-radius: var(--border-radius);
+  transition: background 0.2s;
 }
 
 .navbar-logout-btn:hover {
-  /* On hover, fill with red */
-  background-color: var(--color-danger);
-  color: var(--color-white);
+  background-color: #fff5f5;
 }
 
-/* --- END OF FIX --- */
-
-
 @media (max-width: 768px) {
-  .navbar {
-    flex-direction: column;
-    gap: 0.75rem;
-  }
-
-  .navbar-brand {
-    font-size: 1.25rem;
-    text-align: center;
-  }
-
-  .navbar-user-menu {
-    width: 100%;
-    justify-content: center;
-    margin-top: 1rem;
-  }
-
-  .navbar-settings-link,
-  .navbar-logout-btn {
-    padding: 0.75rem 1.25rem;
-    min-height: 44px;
-  }
-
-  .navbar-welcome-text {
+  .mobile-hidden {
     display: none;
+  }
+
+  .navbar {
+    padding: 0.5rem 1rem;
   }
 }

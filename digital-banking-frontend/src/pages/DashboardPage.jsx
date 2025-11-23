@@ -9,7 +9,7 @@ import BalanceCard from '../components/BalanceCard';
 import QuickActions from '../components/QuickActions';
 import TransactionModal from '../components/TransactionModal';
 import TransactionHistory from '../components/TransactionHistory';
-import SavingsPromo from '../components/SavingsPromo';
+import OffersCarousel from '../components/OffersCarousel';
 import { useBackGuard } from '../hooks/useBackGuard';
 import { useUserData } from '../hooks/useBankingData';
 import { useQueryClient } from '@tanstack/react-query';
@@ -61,10 +61,6 @@ const DashboardPage = () => {
     setModal(null);
     queryClient.invalidateQueries({ queryKey: ['user'] });
     setShowHistory(true);
-    // React Query handles the refetch, so we don't need a historyKey to force re-render if TransactionHistory also uses React Query
-    // But if TransactionHistory is still using old fetch, we might need to signal it.
-    // For this step, we assume TransactionHistory will be updated or we just rely on parent re-render.
-    // Ideally TransactionHistory should also use useTransactions hook.
   };
 
   if (isUserLoading) {
@@ -127,7 +123,7 @@ const DashboardPage = () => {
         isAdmin={isAdmin}
       />
 
-      <SavingsPromo />
+      <OffersCarousel />
 
       <div className="transaction-history-toggle">
         <button

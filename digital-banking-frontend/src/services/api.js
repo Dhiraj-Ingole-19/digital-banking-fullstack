@@ -46,6 +46,10 @@ export const getUserAccounts = () => {
   return api.get('/user/accounts');
 };
 
+export const updateProfile = (profileData) => {
+  return api.put('/user/accounts/profile', profileData);
+};
+
 export const createNewAccount = (accountType) => {
   return api.post('/user/accounts', { type: accountType });
 };

@@ -27,7 +27,8 @@ public class AccountService {
     private final SecurityUtil securityUtil;
 
     private void validateAccountOwnership(Long accountId) {
-        if (securityUtil.isAdmin()) return;
+        if (securityUtil.isAdmin())
+            return;
 
         Account account = accountRepository.findById(accountId)
                 .orElseThrow(() -> new RoleNotFoundException("Account not found with ID: " + accountId));
@@ -90,7 +91,8 @@ public class AccountService {
         Account account = accountRepository.findById(accountId)
                 .orElseThrow(() -> new RoleNotFoundException("Account not found with ID: " + accountId));
 
-        if (!account.isActive()) return;
+        if (!account.isActive())
+            return;
 
         account.setActive(false);
         accountRepository.save(account);
@@ -102,7 +104,8 @@ public class AccountService {
         Account account = accountRepository.findById(accountId)
                 .orElseThrow(() -> new RoleNotFoundException("Account not found with ID: " + accountId));
 
-        if (account.isActive()) return;
+        if (account.isActive())
+            return;
 
         account.setActive(true);
         accountRepository.save(account);
@@ -139,5 +142,9 @@ public class AccountService {
     public User getUserByUsername(String username) {
         return userRepository.findByUsername(username)
                 .orElseThrow(() -> new RoleNotFoundException("User not found: " + username));
+    }
+
+    public User getCurrentUser() {
+        return securityUtil.getCurrentUserEntity();
     }
 }

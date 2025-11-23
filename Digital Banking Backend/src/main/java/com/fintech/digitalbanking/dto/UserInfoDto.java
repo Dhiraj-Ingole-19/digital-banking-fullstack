@@ -13,6 +13,9 @@ public class UserInfoDto {
     private boolean enabled;
     private List<AccountDto> accounts;
     private Long selectedAccountId;
+    private String fullName;
+    private String phoneNumber;
+    private String address;
 
     // --- THIS IS THE FIX ---
     // This line was missing from the file you pasted

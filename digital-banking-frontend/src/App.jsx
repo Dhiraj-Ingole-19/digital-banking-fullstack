@@ -1,20 +1,20 @@
 // src/App.jsx
 
-import React from 'react';
+import React, { Suspense } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import HomePage from './pages/HomePage.jsx';
 import LoginPage from './pages/LoginPage.jsx';
 import RegisterPage from './pages/RegisterPage.jsx';
-import DashboardPage from './pages/DashboardPage.jsx';
-import AllTransactionsPage from './pages/AllTransactionsPage.jsx';
 import RoleRoute from './components/RoleRoute.jsx';
 import Navbar from './components/Navbar.jsx';
-import './App.css'; // <-- THIS IS THE FIX
-import AccountManagementPage from './pages/AccountManagementPage.jsx';
-import MyRequestsPage from './pages/MyRequestsPage.jsx';
+import './App.css';
 
-// --- Import Admin Components ---
-import AdminDashboardPage from './pages/AdminDashboardPage.jsx';
+// Lazy Load Components
+const DashboardPage = React.lazy(() => import('./pages/DashboardPage.jsx'));
+const AllTransactionsPage = React.lazy(() => import('./pages/AllTransactionsPage.jsx'));
+const AccountManagementPage = React.lazy(() => import('./pages/AccountManagementPage.jsx'));
+const MyRequestsPage = React.lazy(() => import('./pages/MyRequestsPage.jsx'));
+const AdminDashboardPage = React.lazy(() => import('./pages/AdminDashboardPage.jsx'));
 
 // This layout is for PRIVATE pages (dashboard, settings, etc.)
 const AppLayout = ({ children }) => {
@@ -22,7 +22,9 @@ const AppLayout = ({ children }) => {
     <div className="app-layout">
       <Navbar />
       <main className="main-content">
-        {children}
+        <Suspense fallback={<div className="loading-spinner">Loading App...</div>}>
+          {children}
+        </Suspense>
       </main>
     </div>
   );

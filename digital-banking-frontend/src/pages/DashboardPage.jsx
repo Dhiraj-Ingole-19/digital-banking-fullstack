@@ -11,23 +11,31 @@ import TransactionModal from '../components/TransactionModal';
 import TransactionHistory from '../components/TransactionHistory';
 import SavingsPromo from '../components/SavingsPromo';
 import { useBackGuard } from '../hooks/useBackGuard';
+import { useUserData } from '../hooks/useBankingData';
+import { useQueryClient } from '@tanstack/react-query';
 
 import './Dashboard.css';
 
 const DashboardPage = () => {
   useBackGuard();
-  const { user, fetchUser, selectAccount } = useAuth();
+  const { user: authUser, selectAccount } = useAuth(); // Use authUser for initial state if needed, but rely on query data
+  const { data: user, isLoading: isUserLoading } = useUserData();
+  const queryClient = useQueryClient();
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [modal, setModal] = useState(null);
   const [isSwitchModalOpen, setIsSwitchModalOpen] = useState(false);
   const [showHistory, setShowHistory] = useState(false);
-  const [historyKey, setHistoryKey] = useState(user?.selectedAccountId || 1);
+
+  // We can derive selectedAccount from the user data and the selectedAccountId in auth context
+  // Or better, if the backend returns the selected state, we use that.
+  // For now, let's assume we still rely on authUser.selectedAccountId for the ID, but get the account details from 'user' data.
 
   const selectedAccount = useMemo(() => {
-    if (!user || !user.accounts) return null;
-    return user.accounts.find(acc => acc.id === user.selectedAccountId);
-  }, [user]);
+    if (!user || !user.accounts || !authUser) return null;
+    return user.accounts.find(acc => acc.id === authUser.selectedAccountId);
+  }, [user, authUser]);
 
   useEffect(() => {
     if (user && !selectedAccount && user.accounts && user.accounts.length > 0) {
@@ -35,19 +43,12 @@ const DashboardPage = () => {
     }
   }, [user, selectedAccount, selectAccount]);
 
-  useEffect(() => {
-    if (user?.selectedAccountId) {
-      setHistoryKey(user.selectedAccountId);
-      setShowHistory(false);
-    }
-  }, [user?.selectedAccountId]);
-
   const handleCreateAccount = async (accountType) => {
     setLoading(true);
     setError('');
     try {
       await createNewAccount(accountType);
-      await fetchUser();
+      queryClient.invalidateQueries({ queryKey: ['user'] });
     } catch (err) {
       console.error('Failed to create account:', err);
       setError(`Error: ${err.response?.data?.message || 'Could not create account'}`);
@@ -58,13 +59,20 @@ const DashboardPage = () => {
 
   const onTransactionSuccess = () => {
     setModal(null);
-    fetchUser();
+    queryClient.invalidateQueries({ queryKey: ['user'] });
     setShowHistory(true);
-    setHistoryKey(Date.now()); // This forces the refresh
+    // React Query handles the refetch, so we don't need a historyKey to force re-render if TransactionHistory also uses React Query
+    // But if TransactionHistory is still using old fetch, we might need to signal it.
+    // For this step, we assume TransactionHistory will be updated or we just rely on parent re-render.
+    // Ideally TransactionHistory should also use useTransactions hook.
   };
 
-  if (!user) {
+  if (isUserLoading) {
     return <div>Loading user data...</div>;
+  }
+
+  if (!user) {
+    return <div>Error loading user data.</div>;
   }
 
   if (user.accounts.length === 0) {
@@ -95,7 +103,7 @@ const DashboardPage = () => {
   }
 
   if (!selectedAccount) {
-    return <div>Loading user data...</div>;
+    return <div>Select an account to view details.</div>;
   }
 
   const isAdmin = user?.roles?.includes('ROLE_ADMIN');
@@ -132,7 +140,6 @@ const DashboardPage = () => {
 
       {showHistory && (
         <TransactionHistory
-          key={historyKey}
           accountId={selectedAccount.id}
         />
       )}

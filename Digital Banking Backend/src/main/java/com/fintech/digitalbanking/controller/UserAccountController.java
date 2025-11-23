@@ -2,10 +2,12 @@ package com.fintech.digitalbanking.controller;
 
 import com.fintech.digitalbanking.dto.AccountDto;
 import com.fintech.digitalbanking.dto.CreateAccountRequest;
+import com.fintech.digitalbanking.dto.UpdateProfileRequest;
 import com.fintech.digitalbanking.dto.UserInfoDto;
 import com.fintech.digitalbanking.entity.Account;
 import com.fintech.digitalbanking.entity.User;
 import com.fintech.digitalbanking.exception.RoleNotFoundException;
+import com.fintech.digitalbanking.repository.UserRepository;
 import com.fintech.digitalbanking.service.AccountService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +28,7 @@ import java.util.stream.Collectors;
 public class UserAccountController {
 
     private final AccountService accountService;
+    private final UserRepository userRepository;
 
     @GetMapping("/lookup/{username}")
     public ResponseEntity<Map<String, String>> lookupAccount(@PathVariable String username) {
@@ -97,15 +100,32 @@ public class UserAccountController {
         return ResponseEntity.ok(accountService.getSelectedAccountBalance());
     }
 
+    @PutMapping("/profile")
+    public ResponseEntity<UserInfoDto> updateProfile(@RequestBody UpdateProfileRequest request) {
+        User user = accountService.getCurrentUser();
+
+        if (request.getFullName() != null)
+            user.setFullName(request.getFullName());
+        if (request.getPhoneNumber() != null)
+            user.setPhoneNumber(request.getPhoneNumber());
+        if (request.getAddress() != null)
+            user.setAddress(request.getAddress());
+
+        userRepository.save(user);
+
+        return ResponseEntity.ok(mapToUserInfoDto(user));
+    }
+
     @GetMapping("/me")
     public ResponseEntity<UserInfoDto> getMyDetails(Authentication authentication) {
         String username = authentication.getName();
         User user = accountService.getUserByUsername(username);
-        List<Account> accounts = accountService.getAccountsByUserId(user.getId());
+        return ResponseEntity.ok(mapToUserInfoDto(user));
+    }
 
-        List<AccountDto> accountDtos = accounts.stream()
-                .map(this::toDto)
-                .collect(Collectors.toList());
+    private UserInfoDto mapToUserInfoDto(User user) {
+        List<Account> accounts = accountService.getAccountsByUserId(user.getId());
+        List<AccountDto> accountDtos = accounts.stream().map(this::toDto).collect(Collectors.toList());
 
         List<String> roleNames = user.getRoles().stream()
                 .map(role -> {
@@ -114,16 +134,17 @@ public class UserAccountController {
                 })
                 .collect(Collectors.toList());
 
-        UserInfoDto dto = UserInfoDto.builder()
+        return UserInfoDto.builder()
                 .id(user.getId())
                 .username(user.getUsername())
                 .enabled(user.isEnabled())
                 .accounts(accountDtos)
                 .selectedAccountId(user.getSelectedAccountId())
                 .roles(roleNames)
+                .fullName(user.getFullName())
+                .phoneNumber(user.getPhoneNumber())
+                .address(user.getAddress())
                 .build();
-
-        return ResponseEntity.ok(dto);
     }
 
     private AccountDto toDto(Account a) {

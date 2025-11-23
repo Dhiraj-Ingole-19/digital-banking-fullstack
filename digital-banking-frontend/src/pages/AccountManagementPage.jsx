@@ -1,27 +1,67 @@
 // src/pages/AccountManagementPage.jsx
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import AccountManagementRow from '../components/AccountManagementRow';
 import './AccountManagementPage.css';
 import { Link } from 'react-router-dom';
-import { createNewAccount } from '../services/api';
+import { createNewAccount, updateProfile } from '../services/api';
+import { useUserData } from '../hooks/useBankingData';
+import { useQueryClient } from '@tanstack/react-query';
 
 const AccountManagementPage = () => {
-  const { user, fetchUser } = useAuth();
+  const { user: authUser, fetchUser } = useAuth(); // Keep authUser for initial load if needed
+  const { data: user, isLoading } = useUserData();
+  const queryClient = useQueryClient();
+
   const [creating, setCreating] = useState(false);
 
-  if (!user) {
-    return <div className="loading-spinner">Loading user details...</div>;
-  }
+  // Profile Form State
+  const [formData, setFormData] = useState({
+    fullName: '',
+    phoneNumber: '',
+    address: ''
+  });
+  const [editing, setEditing] = useState(false);
+  const [saving, setSaving] = useState(false);
 
-  const isAdmin = user.roles && user.roles.includes('ROLE_ADMIN');
+  // Initialize form data when user loads
+  useEffect(() => {
+    if (user) {
+      setFormData({
+        fullName: user.fullName || '',
+        phoneNumber: user.phoneNumber || '',
+        address: user.address || ''
+      });
+    }
+  }, [user]);
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleSaveProfile = async (e) => {
+    e.preventDefault();
+    setSaving(true);
+    try {
+      await updateProfile(formData);
+      queryClient.invalidateQueries({ queryKey: ['user'] });
+      setEditing(false);
+      alert('Profile updated successfully!');
+    } catch (err) {
+      console.error('Failed to update profile', err);
+      alert('Failed to update profile.');
+    } finally {
+      setSaving(false);
+    }
+  };
 
   const handleCreateAccount = async (type) => {
     setCreating(true);
     try {
       await createNewAccount(type);
-      await fetchUser(); // Refresh user data
+      queryClient.invalidateQueries({ queryKey: ['user'] });
       alert(`${type} account created successfully!`);
     } catch (err) {
       console.error("Failed to create account", err);
@@ -31,25 +71,88 @@ const AccountManagementPage = () => {
     }
   };
 
+  if (isLoading) {
+    return <div className="loading-spinner">Loading user details...</div>;
+  }
+
+  if (!user) {
+    return <div>Error loading user data.</div>;
+  }
+
+  const isAdmin = user.roles && user.roles.includes('ROLE_ADMIN');
+
   return (
     <div className="account-management-container">
       <h1>Profile & Settings</h1>
 
       {/* --- SECTION 1: USER PROFILE --- */}
       <div className="settings-card">
-        <h2>User Profile</h2>
-        <div className="form-group">
-          <label>Username</label>
-          <input type="text" value={user.username} disabled />
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+          <h2 style={{ margin: 0 }}>User Profile</h2>
+          {!editing ? (
+            <button className="btn-outline" onClick={() => setEditing(true)}>Edit Profile</button>
+          ) : (
+            <button className="btn-outline" onClick={() => setEditing(false)}>Cancel</button>
+          )}
         </div>
-        <div className="form-group">
-          <label>User ID</label>
-          <input type="text" value={user.id} disabled />
-        </div>
-        <div className="form-group">
-          <label>Roles</label>
-          <input type="text" value={user.roles ? user.roles.join(', ') : ''} disabled />
-        </div>
+
+        <form onSubmit={handleSaveProfile}>
+          <div className="form-group">
+            <label>Username</label>
+            <input type="text" value={user.username} disabled />
+          </div>
+
+          <div className="form-group">
+            <label>Full Name</label>
+            <input
+              type="text"
+              name="fullName"
+              value={formData.fullName}
+              onChange={handleInputChange}
+              disabled={!editing}
+              placeholder="Enter your full name"
+            />
+          </div>
+
+          <div className="form-group">
+            <label>Phone Number</label>
+            <input
+              type="text"
+              name="phoneNumber"
+              value={formData.phoneNumber}
+              onChange={handleInputChange}
+              disabled={!editing}
+              placeholder="Enter your phone number"
+            />
+          </div>
+
+          <div className="form-group">
+            <label>Address</label>
+            <input
+              type="text"
+              name="address"
+              value={formData.address}
+              onChange={handleInputChange}
+              disabled={!editing}
+              placeholder="Enter your address"
+            />
+          </div>
+
+          <div className="form-group">
+            <label>User ID</label>
+            <input type="text" value={user.id} disabled />
+          </div>
+          <div className="form-group">
+            <label>Roles</label>
+            <input type="text" value={user.roles ? user.roles.join(', ') : ''} disabled />
+          </div>
+
+          {editing && (
+            <button type="submit" className="btn btn-primary" disabled={saving} style={{ marginTop: '1rem' }}>
+              {saving ? 'Saving...' : 'Save Changes'}
+            </button>
+          )}
+        </form>
       </div>
 
       {/* --- SECTIONS 2 & 3: HIDE IF ADMIN --- */}

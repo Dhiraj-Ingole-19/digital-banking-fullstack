@@ -197,4 +197,15 @@
   .account-list-header {
     display: none;
   }
+
+  .admin-stats-card {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 1rem !important;
+  }
+
+  .admin-stats-card button {
+    width: 100% !important;
+    margin-left: 0 !important;
+  }
 }

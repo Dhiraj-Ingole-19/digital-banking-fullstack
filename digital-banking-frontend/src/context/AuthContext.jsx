@@ -15,21 +15,21 @@ export const useAuth = () => {
 const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [token, setToken] = useState(localStorage.getItem('token'));
-  const [loading, setLoading] = useState(true); 
-  const [authLoading, setAuthLoading] = useState(false); 
+  const [loading, setLoading] = useState(true);
+  const [authLoading, setAuthLoading] = useState(false);
 
   const fetchUser = useCallback(async () => {
     try {
       const response = await getCurrentUser();
       setUser(response.data);
-      return response.data; 
+      return response.data;
     } catch (err) {
       console.error('Failed to fetch user', err);
       localStorage.removeItem('token');
       setToken(null);
       setUser(null);
       delete api.defaults.headers.common['Authorization'];
-      return null; 
+      return null;
     } finally {
       setLoading(false);
     }
@@ -54,8 +54,8 @@ const AuthProvider = ({ children }) => {
       localStorage.setItem('token', token);
       api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
       setToken(token);
-      const user = await fetchUser(); 
-      return user; 
+      const user = await fetchUser();
+      return user;
     } finally {
       setAuthLoading(false);
     }
@@ -69,8 +69,8 @@ const AuthProvider = ({ children }) => {
       localStorage.setItem('token', token);
       api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
       setToken(token);
-      const user = await fetchUser(); 
-      return user; 
+      const user = await fetchUser();
+      return user;
     } finally {
       setAuthLoading(false);
     }
@@ -81,6 +81,7 @@ const AuthProvider = ({ children }) => {
     setToken(null);
     localStorage.removeItem('token');
     delete api.defaults.headers.common['Authorization'];
+    window.location.href = '/';
   };
 
   const selectAccount = async (accountId) => {

@@ -1,6 +1,7 @@
 // src/pages/AdminDashboardPage.jsx
 
 import React, { useState, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import AdminUserSearch from '../components/AdminUserSearch';
 import AdminRollbackQueue from '../components/AdminRollbackQueue';
@@ -39,12 +40,19 @@ const AdminDashboardNav = ({ currentTab, setTab }) => {
 const AdminDashboardPage = () => {
   useBackGuard();
   const { user: adminUser } = useAuth();
+  const [searchParams] = useSearchParams();
   const [currentTab, setCurrentTab] = useState('queue');
   const [userCount, setUserCount] = useState(0);
   const [loadingCount, setLoadingCount] = useState(true);
   const [showUserList, setShowUserList] = useState(false);
   const [allUsers, setAllUsers] = useState([]);
   const [loadingUsers, setLoadingUsers] = useState(false);
+
+  // Sync tab state with URL query parameters
+  useEffect(() => {
+    const tab = searchParams.get('tab');
+    if (tab) setCurrentTab(tab);
+  }, [searchParams]);
 
   useEffect(() => {
     if (adminUser?.roles?.includes('ROLE_ADMIN')) {

@@ -70,7 +70,17 @@
 
   .dashboard-header {
     flex-direction: column;
+    align-items: stretch;
+  }
+
+  .account-selector-wrapper {
+    flex-direction: column;
     align-items: flex-start;
+  }
+
+  .switch-account-btn {
+    width: 100%;
+    margin-top: 1rem;
   }
 
   .empty-state {

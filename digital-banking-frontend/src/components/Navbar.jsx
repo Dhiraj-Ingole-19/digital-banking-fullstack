@@ -3,11 +3,11 @@
 import React from 'react';
 import { useAuth } from '../context/AuthContext';
 import { Link } from 'react-router-dom';
-import { LogOut, Wallet } from 'lucide-react';
+import { UserCircle, Wallet } from 'lucide-react';
 import './Navbar.css';
 
 const Navbar = () => {
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
 
   return (
     <nav className="navbar glass-panel">
@@ -23,10 +23,9 @@ const Navbar = () => {
           </span>
         )}
 
-        <button onClick={logout} className="navbar-logout-btn" title="Log Out">
-          <LogOut size={20} />
-          <span className="mobile-hidden">Log Out</span>
-        </button>
+        <Link to="/settings" className="nav-profile-icon" title="Profile & Settings">
+          <UserCircle size={28} />
+        </Link>
       </div>
     </nav>
   );

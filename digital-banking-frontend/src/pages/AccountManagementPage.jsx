@@ -4,13 +4,12 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import AccountManagementRow from '../components/AccountManagementRow';
 import './AccountManagementPage.css';
-import { Link } from 'react-router-dom';
 import { createNewAccount, updateProfile } from '../services/api';
 import { useUserData } from '../hooks/useBankingData';
 import { useQueryClient } from '@tanstack/react-query';
 
 const AccountManagementPage = () => {
-  const { user: authUser, fetchUser } = useAuth(); // Keep authUser for initial load if needed
+  const { user: authUser, fetchUser, logout } = useAuth(); // Add logout
   const { data: user, isLoading } = useUserData();
   const queryClient = useQueryClient();
 
@@ -85,10 +84,10 @@ const AccountManagementPage = () => {
     <div className="account-management-container">
       <h1>Profile & Settings</h1>
 
-      {/* --- SECTION 1: USER PROFILE --- */}
+      {/* --- SECTION 1: EDIT PROFILE --- */}
       <div className="settings-card">
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-          <h2 style={{ margin: 0 }}>User Profile</h2>
+          <h2 style={{ margin: 0 }}>Edit Profile</h2>
           {!editing ? (
             <button className="btn-outline" onClick={() => setEditing(true)}>Edit Profile</button>
           ) : (
@@ -155,52 +154,55 @@ const AccountManagementPage = () => {
         </form>
       </div>
 
-      {/* --- SECTIONS 2 & 3: HIDE IF ADMIN --- */}
+      {/* --- SECTION 2: MANAGE ACCOUNTS (USER ONLY) --- */}
       {!isAdmin && (
-        <>
-          {/* --- 2. NEW: "MY REQUESTS" SECTION --- */}
-          <div className="settings-card">
-            <h2>My Support Requests</h2>
-            <p>Track the status of your reported transactions and support tickets.</p>
-            <Link to="/my-requests" className="btn btn-primary" style={{ marginTop: '1rem' }}>
-              View My Requests &rarr;
-            </Link>
+        <div className="settings-card">
+          <h2>Manage Accounts</h2>
+          <p>Activate, deactivate, or set your default account.</p>
+          <div className="account-management-list">
+            {user.accounts && user.accounts.length > 0 ? (
+              user.accounts.map(account => (
+                <AccountManagementRow key={account.id} account={account} />
+              ))
+            ) : (
+              <p>No accounts found.</p>
+            )}
           </div>
 
-          {/* --- SECTION 3: ACCOUNT MANAGEMENT --- */}
-          <div className="settings-card">
-            <h2>Manage Accounts</h2>
-            <p>Activate, deactivate, or set your default account.</p>
-            <div className="account-management-list">
-              {user.accounts && user.accounts.length > 0 ? (
-                user.accounts.map(account => (
-                  <AccountManagementRow key={account.id} account={account} />
-                ))
-              ) : (
-                <p>No accounts found.</p>
-              )}
-            </div>
-
-            {/* --- NEW: Open Account Buttons --- */}
-            <div style={{ marginTop: '1.5rem', display: 'flex', gap: '1rem' }}>
-              <button
-                className="btn btn-success"
-                onClick={() => handleCreateAccount('SAVINGS')}
-                disabled={creating}
-              >
-                {creating ? 'Creating...' : '+ Open Savings Account'}
-              </button>
-              <button
-                className="btn btn-primary"
-                onClick={() => handleCreateAccount('CURRENT')}
-                disabled={creating}
-              >
-                {creating ? 'Creating...' : '+ Open Current Account'}
-              </button>
-            </div>
+          {/* --- NEW: Open Account Buttons --- */}
+          <div style={{ marginTop: '1.5rem', display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+            <button
+              className="btn btn-success"
+              onClick={() => handleCreateAccount('SAVINGS')}
+              disabled={creating}
+            >
+              {creating ? 'Creating...' : '+ Open Savings Account'}
+            </button>
+            <button
+              className="btn btn-primary"
+              onClick={() => handleCreateAccount('CURRENT')}
+              disabled={creating}
+            >
+              {creating ? 'Creating...' : '+ Open Current Account'}
+            </button>
           </div>
-        </>
+        </div>
       )}
+
+      {/* --- SECTION 3: LOG OUT BUTTON --- */}
+      <div className="settings-card">
+        <button
+          onClick={logout}
+          className="btn"
+          style={{
+            backgroundColor: 'var(--color-danger)',
+            color: 'white',
+            width: '100%'
+          }}
+        >
+          Log Out
+        </button>
+      </div>
     </div>
   );
 };

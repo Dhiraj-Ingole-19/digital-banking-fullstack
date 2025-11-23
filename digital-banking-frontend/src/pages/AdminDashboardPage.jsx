@@ -6,6 +6,7 @@ import AdminUserSearch from '../components/AdminUserSearch';
 import AdminRollbackQueue from '../components/AdminRollbackQueue';
 import AdminAllTransactions from '../components/AdminAllTransactions';
 import { getUserCount, getAllUsers } from '../services/adminApi';
+import { useBackGuard } from '../hooks/useBackGuard';
 import './AdminDashboardPage.css';
 
 // This is our Tab Navigation
@@ -36,6 +37,7 @@ const AdminDashboardNav = ({ currentTab, setTab }) => {
 
 
 const AdminDashboardPage = () => {
+  useBackGuard();
   const { user: adminUser } = useAuth();
   const [currentTab, setCurrentTab] = useState('queue');
   const [userCount, setUserCount] = useState(0);
@@ -54,19 +56,6 @@ const AdminDashboardPage = () => {
       setLoadingCount(false);
     }
   }, [adminUser]);
-
-  // Back Button Guard
-  useEffect(() => {
-    const handlePopState = (event) => {
-      const confirmLeave = window.confirm("Are you sure you want to leave? You will be logged out.");
-      if (!confirmLeave) {
-        window.history.pushState(null, "", window.location.pathname);
-      }
-    };
-    window.history.pushState(null, "", window.location.pathname);
-    window.addEventListener("popstate", handlePopState);
-    return () => window.removeEventListener("popstate", handlePopState);
-  }, []);
 
   const handleToggleUserList = async () => {
     if (!showUserList) {

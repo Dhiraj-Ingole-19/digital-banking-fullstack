@@ -59,7 +59,7 @@ const AccountManagementPage = () => {
           <div className="settings-card">
             <h2>My Support Requests</h2>
             <p>Track the status of your reported transactions and support tickets.</p>
-            <Link to="/my-requests" className="btn-primary-link" style={{ display: 'inline-block', marginTop: '1rem', textDecoration: 'none', color: 'var(--color-primary)', fontWeight: 'bold' }}>
+            <Link to="/my-requests" className="btn btn-primary" style={{ marginTop: '1rem' }}>
               View My Requests &rarr;
             </Link>
           </div>
@@ -81,20 +81,18 @@ const AccountManagementPage = () => {
             {/* --- NEW: Open Account Buttons --- */}
             <div style={{ marginTop: '1.5rem', display: 'flex', gap: '1rem' }}>
               <button
-                className="btn-success"
+                className="btn btn-success"
                 onClick={() => handleCreateAccount('SAVINGS')}
                 disabled={creating}
-                style={{ padding: '0.75rem 1.5rem', border: 'none', borderRadius: '4px', cursor: 'pointer', backgroundColor: '#28a745', color: 'white', fontWeight: 'bold' }}
               >
-                + Create Savings Account
+                {creating ? 'Creating...' : '+ Open Savings Account'}
               </button>
               <button
-                className="btn-primary"
+                className="btn btn-primary"
                 onClick={() => handleCreateAccount('CURRENT')}
                 disabled={creating}
-                style={{ padding: '0.75rem 1.5rem', border: 'none', borderRadius: '4px', cursor: 'pointer', backgroundColor: '#007bff', color: 'white', fontWeight: 'bold' }}
               >
-                + Create Current Account
+                {creating ? 'Creating...' : '+ Open Current Account'}
               </button>
             </div>
           </div>

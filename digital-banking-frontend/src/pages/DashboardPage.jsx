@@ -10,10 +10,12 @@ import QuickActions from '../components/QuickActions';
 import TransactionModal from '../components/TransactionModal';
 import TransactionHistory from '../components/TransactionHistory';
 import SavingsPromo from '../components/SavingsPromo';
+import { useBackGuard } from '../hooks/useBackGuard';
 
 import './Dashboard.css';
 
 const DashboardPage = () => {
+  useBackGuard();
   const { user, fetchUser, selectAccount } = useAuth();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -39,19 +41,6 @@ const DashboardPage = () => {
       setShowHistory(false);
     }
   }, [user?.selectedAccountId]);
-
-  // Back Button Guard
-  useEffect(() => {
-    const handlePopState = (event) => {
-      const confirmLeave = window.confirm("Are you sure you want to leave? You will be logged out.");
-      if (!confirmLeave) {
-        window.history.pushState(null, "", window.location.pathname);
-      }
-    };
-    window.history.pushState(null, "", window.location.pathname);
-    window.addEventListener("popstate", handlePopState);
-    return () => window.removeEventListener("popstate", handlePopState);
-  }, []);
 
   const handleCreateAccount = async (accountType) => {
     setLoading(true);

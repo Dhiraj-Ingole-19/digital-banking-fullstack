@@ -28,6 +28,24 @@ export const loginUser = (username, password) => {
 export const registerUser = (username, password) => {
   return api.post('/auth/register', { username, password });
 };
+
+// --- User Service Calls ---
+export const getCurrentUser = () => {
+  return api.get('/user/accounts/me');
+};
+
+export const getMyRequests = () => {
+  return api.get('/user/requests');
+};
+
+export const requestRollback = (transactionId, reason) => {
+  return api.post(`/user/requests/rollback/${transactionId}`, { reason });
+};
+
+export const getUserAccounts = () => {
+  return api.get('/user/accounts');
+};
+
 export const createNewAccount = (accountType) => {
   return api.post('/user/accounts', { type: accountType });
 };

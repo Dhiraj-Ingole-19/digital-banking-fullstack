@@ -26,14 +26,18 @@ const AppLayout = ({ children }) => {
     <div className="modern-layout">
       <Navbar />
       <div className="content-wrapper">
-        <Sidebar className="desktop-only" />
-        <main className="page-content">
+        <aside className="desktop-sidebar">
+          <Sidebar />
+        </aside>
+        <main className="main-content">
           <Suspense fallback={<div className="loading-spinner">Loading App...</div>}>
             {children}
           </Suspense>
         </main>
       </div>
-      <BottomNav className="mobile-only" />
+      <nav className="mobile-bottom-nav">
+        <BottomNav />
+      </nav>
     </div>
   );
 };

@@ -26,6 +26,9 @@
 
   --border-radius: 12px;
   /* Slightly rounder */
+
+  --sidebar-width: 250px;
+  --bottom-nav-height: 64px;
 }
 
 .glass-panel {
@@ -103,14 +106,92 @@ a:hover {
   position: relative;
 }
 
+/* =================================
+   Strict Responsive Visibility Rules
+   ================================= */
+
+/* Default: Mobile First (Sidebar Hidden, Bottom Nav Visible) */
+.desktop-sidebar {
+  display: none;
+  /* Hidden by default on mobile */
+}
+
+.mobile-bottom-nav {
+  display: block;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+}
+
+.main-content {
+  flex: 1;
+  padding: 1rem;
+  margin-left: 0;
+  background-color: var(--color-gray-light);
+  min-height: calc(100vh - 64px);
+  padding-bottom: calc(var(--bottom-nav-height) + 20px);
+  /* Prevent content hiding behind nav */
+}
+
+/* Desktop Breakpoint */
+@media (min-width: 769px) {
+  .desktop-sidebar {
+    display: block !important;
+    /* Force show on desktop */
+    width: var(--sidebar-width);
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+  }
+
+  .mobile-bottom-nav {
+    display: none !important;
+    /* Force hide on desktop */
+  }
+
+  /* Adjust main content to not be hidden behind sidebar */
+  .main-content {
+    margin-left: var(--sidebar-width);
+    padding: 2rem;
+    padding-bottom: 0;
+    /* No bottom nav spacer needed */
+  }
+}
+
+/* Mobile adjustments */
+@media (max-width: 768px) {
+  .main-content {
+    margin-left: 0;
+    padding: 1rem;
+    padding-bottom: calc(var(--bottom-nav-height) + 20px);
+    /* Prevent content hiding behind nav */
+  }
+}
+
+/* Legacy support for existing classes */
 .page-content {
   flex: 1;
   padding: 2rem;
-  margin-left: 250px;
-  /* Sidebar width */
+  margin-left: 0;
   background-color: var(--color-gray-light);
   min-height: calc(100vh - 64px);
-  /* Minus navbar */
+}
+
+@media (min-width: 769px) {
+  .page-content {
+    margin-left: var(--sidebar-width);
+  }
+}
+
+@media (max-width: 768px) {
+  .page-content {
+    margin-left: 0;
+    padding: 1rem;
+    padding-bottom: calc(var(--bottom-nav-height) + 20px);
+  }
 }
 
 /* Global Button Styles */
@@ -160,31 +241,27 @@ a:hover {
   color: var(--color-primary);
 }
 
-/* Responsive Utilities */
+/* Responsive Utilities (Legacy) */
 .desktop-only {
-  display: flex;
+  display: none;
 }
 
 .mobile-only {
-  display: none;
+  display: flex;
+}
+
+@media (min-width: 769px) {
+  .desktop-only {
+    display: flex;
+  }
+
+  .mobile-only {
+    display: none;
+  }
 }
 
 /* Mobile Responsiveness */
 @media (max-width: 768px) {
-  .page-content {
-    margin-left: 0;
-    padding: 1rem;
-    padding-bottom: 80px;
-    /* Space for bottom nav */
-  }
-
-  .desktop-only {
-    display: none;
-  }
-
-  .mobile-only {
-    display: flex;
-  }
 
   input,
   select,

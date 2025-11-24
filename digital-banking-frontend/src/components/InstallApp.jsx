@@ -6,12 +6,15 @@ const InstallApp = () => {
     const [isIOS, setIsIOS] = useState(false);
 
     useEffect(() => {
+        console.log('InstallApp component mounted');
         // Check for iOS
         const isIosDevice = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
         setIsIOS(isIosDevice);
+        if (isIosDevice) console.log('Device detected as iOS');
 
         // Capture install event (Android/Desktop)
         const handler = (e) => {
+            console.log('beforeinstallprompt event fired!', e);
             e.preventDefault();
             setDeferredPrompt(e);
         };

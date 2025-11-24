@@ -1,37 +1,13 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { Download } from 'lucide-react';
+import { usePwa } from '../context/PwaContext';
 
 const InstallApp = () => {
-    const [deferredPrompt, setDeferredPrompt] = useState(null);
-    const [isIOS, setIsIOS] = useState(false);
+    const { deferredPrompt, isIOS, installApp } = usePwa();
 
     useEffect(() => {
-        console.log('InstallApp component mounted');
-        // Check for iOS
-        const isIosDevice = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
-        setIsIOS(isIosDevice);
-        if (isIosDevice) console.log('Device detected as iOS');
-
-        // Capture install event (Android/Desktop)
-        const handler = (e) => {
-            console.log('beforeinstallprompt event fired!', e);
-            e.preventDefault();
-            setDeferredPrompt(e);
-        };
-
-        window.addEventListener('beforeinstallprompt', handler);
-
-        return () => window.removeEventListener('beforeinstallprompt', handler);
-    }, []);
-
-    const handleInstall = async () => {
-        if (!deferredPrompt) return;
-        deferredPrompt.prompt();
-        const { outcome } = await deferredPrompt.userChoice;
-        if (outcome === 'accepted') {
-            setDeferredPrompt(null);
-        }
-    };
+        console.log('InstallApp mounted. Prompt available:', !!deferredPrompt, 'Is iOS:', isIOS);
+    }, [deferredPrompt, isIOS]);
 
     if (isIOS) {
         return (
@@ -44,7 +20,7 @@ const InstallApp = () => {
     if (!deferredPrompt) return null;
 
     return (
-        <button onClick={handleInstall} className="btn btn-success" style={{ width: '100%', marginBottom: '1rem', display: 'flex', gap: '0.5rem' }}>
+        <button onClick={installApp} className="btn btn-success" style={{ width: '100%', marginBottom: '1rem', display: 'flex', gap: '0.5rem' }}>
             <Download size={18} /> Install App
         </button>
     );

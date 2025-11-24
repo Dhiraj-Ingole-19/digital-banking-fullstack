@@ -15,13 +15,17 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 const queryClient = new QueryClient();
 
+import { PwaProvider } from './context/PwaContext.jsx';
+
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <BrowserRouter>
       <AuthProvider>
-        <QueryClientProvider client={queryClient}>
-          <App />
-        </QueryClientProvider>
+        <PwaProvider>
+          <QueryClientProvider client={queryClient}>
+            <App />
+          </QueryClientProvider>
+        </PwaProvider>
       </AuthProvider>
     </BrowserRouter>
   </React.StrictMode>

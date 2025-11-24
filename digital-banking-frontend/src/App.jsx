@@ -23,20 +23,24 @@ import BottomNav from './components/BottomNav.jsx';
 
 const AppLayout = ({ children }) => {
   return (
-    <div className="modern-layout">
-      {/* 1. Sidebar stands alone (Fixed Left) */}
-      <Sidebar className="desktop-sidebar" />
-      {/* 2. Content Wrapper (Pushed Right) */}
-      <div className="content-wrapper">
-        <Navbar />
+    <div className="app-shell">
+      {/* Desktop Sidebar (Column 1) */}
+      <aside className="desktop-sidebar">
+        <Sidebar />
+      </aside>
+      {/* Main Content Area (Column 2) */}
+      <div className="main-area">
+        <Navbar /> {/* Now sits inside the grid column, not on top */}
         <main className="main-content">
           <Suspense fallback={<div className="loading-spinner">Loading...</div>}>
             {children}
           </Suspense>
         </main>
       </div>
-      {/* 3. Mobile Nav (Fixed Bottom) */}
-      <BottomNav className="mobile-bottom-nav" />
+      {/* Mobile Nav (Bottom) */}
+      <nav className="mobile-bottom-nav">
+        <BottomNav />
+      </nav>
     </div>
   );
 };

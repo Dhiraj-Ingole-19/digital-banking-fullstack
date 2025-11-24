@@ -122,7 +122,7 @@ const AdminDashboardPage = () => {
         </div>
 
         <button
-          className="btn-outline"
+          className="btn btn-primary"
           style={{ marginLeft: 'auto' }}
           onClick={handleToggleUserList}
         >

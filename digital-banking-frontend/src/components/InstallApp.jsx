@@ -1,51 +1,18 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { Download } from 'lucide-react';
+import { usePwa } from '../context/PwaContext';
 
 const InstallApp = () => {
-    const [deferredPrompt, setDeferredPrompt] = useState(null);
-    const [isIOS, setIsIOS] = useState(false);
-    const [isInstalled, setIsInstalled] = useState(false);
+    const { deferredPrompt, isIOS, installApp } = usePwa();
 
     useEffect(() => {
-        // 1. Check if already installed
-        if (window.matchMedia('(display-mode: standalone)').matches) {
-            setIsInstalled(true);
-        }
-
-        // 2. Check for iOS
-        const isIosDevice = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
-        setIsIOS(isIosDevice);
-
-        // 3. Capture install event
-        const handler = (e) => {
-            e.preventDefault();
-            console.log("PWA Install Prompt Captured"); // Debug log
-            setDeferredPrompt(e);
-        };
-
-        window.addEventListener('beforeinstallprompt', handler);
-
-        // Check if event already fired (rare but possible in some envs)
-        if (window.deferredPrompt) {
-            setDeferredPrompt(window.deferredPrompt);
-            window.deferredPrompt = null;
-        }
-
-        return () => window.removeEventListener('beforeinstallprompt', handler);
-    }, []);
-
-    const handleInstall = async () => {
-        if (!deferredPrompt) return;
-        deferredPrompt.prompt();
-        const { outcome } = await deferredPrompt.userChoice;
-        console.log(`User response to install prompt: ${outcome}`);
-        if (outcome === 'accepted') {
-            setDeferredPrompt(null);
-        }
-    };
+        console.log('InstallApp component - Prompt available:', !!deferredPrompt, 'Is iOS:', isIOS);
+    }, [deferredPrompt, isIOS]);
 
     // Don't show if already installed
-    if (isInstalled) return null;
+    if (window.matchMedia('(display-mode: standalone)').matches) {
+        return null;
+    }
 
     // iOS Instruction
     if (isIOS) {
@@ -58,12 +25,13 @@ const InstallApp = () => {
 
     // Android / Desktop Button
     if (!deferredPrompt) {
-        // Optional: Show a disabled button or nothing if not installable yet
+        console.log('InstallApp: No prompt available yet');
         return null;
     }
 
+    console.log('InstallApp: Rendering install button!');
     return (
-        <button onClick={handleInstall} className="btn btn-success" style={{ width: '100%', marginBottom: '1rem', display: 'flex', gap: '0.5rem', justifyContent: 'center', alignItems: 'center' }}>
+        <button onClick={installApp} className="btn btn-success" style={{ width: '100%', marginBottom: '1rem', display: 'flex', gap: '0.5rem', justifyContent: 'center', alignItems: 'center' }}>
             <Download size={18} /> Install DigiBank App
         </button>
     );

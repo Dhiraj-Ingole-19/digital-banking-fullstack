@@ -48,10 +48,12 @@ const AdminDashboardPage = () => {
   const [allUsers, setAllUsers] = useState([]);
   const [loadingUsers, setLoadingUsers] = useState(false);
 
-  // Sync tab state with URL query parameters
+  // Sync URL params to State
   useEffect(() => {
     const tab = searchParams.get('tab');
-    if (tab) setCurrentTab(tab);
+    if (tab && ['queue', 'users', 'transactions'].includes(tab)) {
+      setCurrentTab(tab);
+    }
   }, [searchParams]);
 
   useEffect(() => {

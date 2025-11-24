@@ -1,11 +1,12 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { LayoutDashboard, ArrowRightLeft, MessageSquare, Settings, LogOut, Wallet } from 'lucide-react';
+import { LayoutDashboard, ArrowRightLeft, MessageSquare, Settings, LogOut, Wallet, Users, FileText } from 'lucide-react';
 import './Sidebar.css';
 
 const Sidebar = ({ className }) => {
-    const { logout } = useAuth();
+    const { user, logout } = useAuth();
+    const isAdmin = user?.roles?.includes('ROLE_ADMIN');
 
     return (
         <aside className={`sidebar ${className}`}>
@@ -15,22 +16,47 @@ const Sidebar = ({ className }) => {
             </div>
 
             <nav className="sidebar-nav">
-                <NavLink to="/dashboard" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
-                    <LayoutDashboard />
-                    <span>Dashboard</span>
-                </NavLink>
-                <NavLink to="/transactions" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
-                    <ArrowRightLeft />
-                    <span>Transactions</span>
-                </NavLink>
-                <NavLink to="/my-requests" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
-                    <MessageSquare />
-                    <span>My Requests</span>
-                </NavLink>
-                <NavLink to="/settings" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
-                    <Settings />
-                    <span>Settings</span>
-                </NavLink>
+                {isAdmin ? (
+                    // Admin Navigation
+                    <>
+                        <NavLink to="/admin/dashboard" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
+                            <LayoutDashboard />
+                            <span>Dashboard</span>
+                        </NavLink>
+                        <NavLink to="/admin/dashboard?tab=users" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
+                            <Users />
+                            <span>User Management</span>
+                        </NavLink>
+                        <NavLink to="/admin/dashboard?tab=queue" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
+                            <FileText />
+                            <span>Rollback Queue</span>
+                        </NavLink>
+                        <NavLink to="/settings" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
+                            <Settings />
+                            <span>Settings</span>
+                        </NavLink>
+                    </>
+                ) : (
+                    // User Navigation
+                    <>
+                        <NavLink to="/dashboard" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
+                            <LayoutDashboard />
+                            <span>Dashboard</span>
+                        </NavLink>
+                        <NavLink to="/transactions" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
+                            <ArrowRightLeft />
+                            <span>Transactions</span>
+                        </NavLink>
+                        <NavLink to="/my-requests" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
+                            <MessageSquare />
+                            <span>My Requests</span>
+                        </NavLink>
+                        <NavLink to="/settings" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
+                            <Settings />
+                            <span>Settings</span>
+                        </NavLink>
+                    </>
+                )}
             </nav>
 
             <div className="sidebar-footer">

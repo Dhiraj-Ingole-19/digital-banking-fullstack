@@ -36,6 +36,31 @@
   color: var(--color-text);
 }
 
+.nav-profile-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--color-primary);
+  padding: 0.5rem;
+  border-radius: 50%;
+  transition: background 0.2s;
+}
+
+.nav-profile-icon:hover {
+  background-color: var(--color-gray-light);
+}
+
+.mobile-logout-btn {
+  background: none;
+  border: none;
+  color: var(--color-danger);
+  cursor: pointer;
+  padding: 0.5rem;
+  display: none;
+  /* Hidden on desktop */
+}
+
 .navbar-logout-btn {
   background: none;
   border: none;
@@ -61,5 +86,9 @@
 
   .navbar {
     padding: 0.5rem 1rem;
+  }
+
+  .mobile-logout-btn {
+    display: flex;
   }
 }

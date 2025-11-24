@@ -2,7 +2,8 @@
 
 import React from 'react';
 import { Link } from 'react-router-dom';
-import './HomePage.css'; 
+import InstallApp from '../components/InstallApp';
+import './HomePage.css';
 
 const HomePage = () => {
   return (
@@ -26,19 +27,19 @@ const HomePage = () => {
             Manage your finances, invest your money, and secure your future.
             All in one secure platform.
           </p>
-          <Link to="/register" className="btn-hero-cta">Open an Account Today</Link>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', maxWidth: '400px' }}>
+            <Link to="/register" className="btn-hero-cta">Open an Account Today</Link>
+            <InstallApp />
+          </div>
         </div>
-        
-        {/* --- THIS IS THE FIX --- */}
-        {/* We use the correct wrapper class and the local image path */}
+
         <div className="hero-image-wrapper">
-          <img 
-            src="/hero-image.jpg" 
-            alt="Person using online banking on a mobile phone" 
+          <img
+            src="/hero-image.jpg"
+            alt="Person using online banking on a mobile phone"
             className="hero-image"
           />
         </div>
-        {/* --- END OF FIX --- */}
 
       </section>
 

@@ -9,8 +9,8 @@ const Sidebar = ({ className }) => {
     const isAdmin = user?.roles?.includes('ROLE_ADMIN');
 
     return (
-        <aside className={`sidebar ${className}`}>
-            <div className="sidebar-logo">
+        <aside className={`sidebar glass-panel ${className}`}>
+            <div className="sidebar-brand">
                 <Wallet size={28} />
                 <span>DigiBank</span>
             </div>
@@ -19,19 +19,19 @@ const Sidebar = ({ className }) => {
                 {isAdmin ? (
                     // Admin Navigation
                     <>
-                        <NavLink to="/admin/dashboard" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
+                        <NavLink to="/admin/dashboard" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
                             <LayoutDashboard />
                             <span>Dashboard</span>
                         </NavLink>
-                        <NavLink to="/admin/dashboard?tab=users" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
+                        <NavLink to="/admin/dashboard?tab=users" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
                             <Users />
                             <span>User Management</span>
                         </NavLink>
-                        <NavLink to="/admin/dashboard?tab=queue" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
+                        <NavLink to="/admin/dashboard?tab=queue" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
                             <FileText />
                             <span>Rollback Queue</span>
                         </NavLink>
-                        <NavLink to="/settings" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
+                        <NavLink to="/settings" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
                             <Settings />
                             <span>Settings</span>
                         </NavLink>
@@ -39,19 +39,19 @@ const Sidebar = ({ className }) => {
                 ) : (
                     // User Navigation
                     <>
-                        <NavLink to="/dashboard" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
+                        <NavLink to="/dashboard" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
                             <LayoutDashboard />
                             <span>Dashboard</span>
                         </NavLink>
-                        <NavLink to="/transactions" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
+                        <NavLink to="/transactions" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
                             <ArrowRightLeft />
                             <span>Transactions</span>
                         </NavLink>
-                        <NavLink to="/my-requests" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
+                        <NavLink to="/my-requests" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
                             <MessageSquare />
                             <span>My Requests</span>
                         </NavLink>
-                        <NavLink to="/settings" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
+                        <NavLink to="/settings" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
                             <Settings />
                             <span>Settings</span>
                         </NavLink>

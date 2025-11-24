@@ -1,5 +1,3 @@
-// src/pages/AccountManagementPage.jsx
-
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import AccountManagementRow from '../components/AccountManagementRow';
@@ -7,6 +5,7 @@ import './AccountManagementPage.css';
 import { createNewAccount, updateProfile } from '../services/api';
 import { useUserData } from '../hooks/useBankingData';
 import { useQueryClient } from '@tanstack/react-query';
+import InstallApp from '../components/InstallApp';
 
 const AccountManagementPage = () => {
   const { user: authUser, fetchUser, logout } = useAuth(); // Add logout
@@ -82,6 +81,7 @@ const AccountManagementPage = () => {
 
   return (
     <div className="account-management-container">
+      <InstallApp />
       <h1>Profile & Settings</h1>
 
       {/* --- SECTION 1: EDIT PROFILE --- */}

@@ -1,8 +1,10 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 
 export const useBackGuard = () => {
   const navigate = useNavigate();
+  const { logout } = useAuth();
 
   useEffect(() => {
     // Push an initial state to create a history entry
@@ -18,8 +20,9 @@ export const useBackGuard = () => {
       );
 
       if (userConfirmed) {
-        // User wants to go back - navigate to login
-        navigate('/login', { replace: true });
+        // User wants to go back - LOG THEM OUT completely
+        logout();
+        // The logout function already redirects to '/', so no need to navigate
       }
       // If user cancels, we've already pushed state back, so they stay on the page
     };
@@ -31,5 +34,5 @@ export const useBackGuard = () => {
     return () => {
       window.removeEventListener('popstate', handlePopState);
     };
-  }, [navigate]);
+  }, [navigate, logout]);
 };

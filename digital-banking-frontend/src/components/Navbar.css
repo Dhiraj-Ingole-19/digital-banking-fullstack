@@ -34,50 +34,11 @@
   color: var(--color-primary);
 }
 
-/* Desktop Menu */
-.navbar-desktop-menu {
+/* User Desktop Menu */
+.navbar-user-menu {
   display: flex;
   align-items: center;
   gap: 1.5rem;
-}
-
-.nav-link {
-  color: var(--color-text);
-  text-decoration: none;
-  font-weight: 500;
-  transition: color 0.2s;
-}
-
-.nav-link:hover {
-  color: var(--color-primary);
-}
-
-.btn-nav-login {
-  color: var(--color-primary);
-  font-weight: 600;
-  text-decoration: none;
-  padding: 0.5rem 1rem;
-  border-radius: 8px;
-  transition: background 0.2s;
-}
-
-.btn-nav-login:hover {
-  background-color: rgba(37, 99, 235, 0.05);
-}
-
-.btn-nav-register {
-  background-color: var(--color-primary);
-  color: white;
-  font-weight: 600;
-  text-decoration: none;
-  padding: 0.5rem 1.25rem;
-  border-radius: 8px;
-  transition: background 0.2s;
-  box-shadow: 0 2px 4px rgba(37, 99, 235, 0.2);
-}
-
-.btn-nav-register:hover {
-  background-color: var(--color-primary-dark);
 }
 
 .navbar-welcome-text {
@@ -128,9 +89,9 @@
   padding: 0.5rem;
 }
 
-/* Mobile Menu */
+/* Mobile Menu (User) */
 .navbar-mobile-menu {
-  display: none; /* Hidden by default, shown via JS logic but we handle visibility in React */
+  display: none;
   position: absolute;
   top: 64px;
   left: 0;
@@ -145,8 +106,15 @@
 }
 
 @keyframes slideDown {
-  from { opacity: 0; transform: translateY(-10px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .mobile-nav-link {
@@ -162,30 +130,6 @@
 .mobile-nav-link:hover {
   background-color: rgba(0, 0, 0, 0.03);
   color: var(--color-primary);
-}
-
-.mobile-btn-login {
-  display: block;
-  text-align: center;
-  padding: 0.75rem;
-  border: 1px solid var(--color-primary);
-  color: var(--color-primary);
-  border-radius: 8px;
-  text-decoration: none;
-  font-weight: 600;
-  margin-top: 0.5rem;
-}
-
-.mobile-btn-register {
-  display: block;
-  text-align: center;
-  padding: 0.75rem;
-  background-color: var(--color-primary);
-  color: white;
-  border-radius: 8px;
-  text-decoration: none;
-  font-weight: 600;
-  margin-top: 0.5rem;
 }
 
 .mobile-user-info {
@@ -216,12 +160,59 @@
   background-color: #fff5f5;
 }
 
-/* Responsive Breakpoint */
+/* =========================================
+   PUBLIC MENU STYLES (Desktop & Mobile)
+   ========================================= */
+
+/* Desktop Public Menu */
+@media (min-width: 769px) {
+  .navbar-public-menu {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+  }
+
+  .nav-btn-public {
+    color: var(--color-text);
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.2s;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+  }
+
+  .nav-btn-public:hover {
+    color: var(--color-primary);
+    background-color: rgba(37, 99, 235, 0.05);
+  }
+
+  /* Specific styling for Login/Register on Desktop to match original design */
+  .nav-btn-public[href="/login"] {
+    color: var(--color-primary);
+    font-weight: 600;
+  }
+
+  .nav-btn-public.primary {
+    background-color: var(--color-primary);
+    color: white;
+    font-weight: 600;
+    padding: 0.5rem 1.25rem;
+    box-shadow: 0 2px 4px rgba(37, 99, 235, 0.2);
+  }
+
+  .nav-btn-public.primary:hover {
+    background-color: var(--color-primary-dark);
+    color: white;
+  }
+}
+
+/* Mobile Responsive Styles */
 @media (max-width: 768px) {
-  .navbar-desktop-menu {
+  .desktop-only {
     display: none;
   }
 
+  /* User Mobile Toggle */
   .mobile-menu-toggle {
     display: block;
   }
@@ -229,8 +220,55 @@
   .navbar-mobile-menu {
     display: flex;
   }
-  
-  .desktop-only {
-    display: none;
+
+  /* --- Public Mobile Layout (The New Design) --- */
+  .public-mobile-layout {
+    flex-direction: column;
+    height: auto !important;
+    padding-bottom: 1rem;
+    gap: 1rem;
+  }
+
+  .public-mobile-layout .navbar-brand {
+    width: 100%;
+    justify-content: center;
+    margin-bottom: 0.5rem;
+    font-size: 1.5rem;
+    /* Slightly larger on mobile center */
+  }
+
+  .navbar-public-menu {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.75rem;
+    width: 100%;
+  }
+
+  .nav-btn-public {
+    background-color: var(--color-primary);
+    color: white;
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.95rem;
+    flex: 1 1 calc(50% - 0.75rem);
+    /* 2 buttons per row */
+    text-align: center;
+    box-shadow: 0 2px 4px rgba(37, 99, 235, 0.2);
+    transition: background 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .nav-btn-public:hover {
+    background-color: var(--color-primary-dark);
+  }
+
+  .nav-btn-public.primary {
+    background-color: var(--color-primary-dark);
+    border: 1px solid rgba(255, 255, 255, 0.2);
   }
 }

@@ -3,23 +3,14 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import InstallApp from '../components/InstallApp';
+import Navbar from '../components/Navbar';
 import './HomePage.css';
 
 const HomePage = () => {
   return (
     <div className="home-container">
       {/* --- Header / Navbar --- */}
-      <header className="home-header">
-        <div className="home-nav-brand">
-          The Digital Bank
-        </div>
-        <div className="home-nav-actions">
-          <Link to="/about" style={{ marginRight: '1rem', color: 'var(--color-text)', textDecoration: 'none', fontWeight: '500' }}>About</Link>
-          <Link to="/contact" style={{ marginRight: '1rem', color: 'var(--color-text)', textDecoration: 'none', fontWeight: '500' }}>Contact</Link>
-          <Link to="/login" className="btn-nav-login">Login</Link>
-          <Link to="/register" className="btn-nav-register">Register</Link>
-        </div>
-      </header>
+      <Navbar />
 
       {/* --- Hero Section --- */}
       <section className="hero-section">

@@ -16,6 +16,7 @@ const AccountManagementPage = React.lazy(() => import('./pages/AccountManagement
 const MyRequestsPage = React.lazy(() => import('./pages/MyRequestsPage.jsx'));
 const AdminDashboardPage = React.lazy(() => import('./pages/AdminDashboardPage.jsx'));
 const AboutPage = React.lazy(() => import('./pages/AboutPage.jsx'));
+const ContactPage = React.lazy(() => import('./pages/ContactPage.jsx'));
 
 // This layout is for PRIVATE pages (dashboard, settings, etc.)
 import Sidebar from './components/Sidebar.jsx';
@@ -50,7 +51,8 @@ function App() {
     <Routes>
       {/* --- PUBLIC ROUTES --- */}
       <Route path="/" element={<HomePage />} />
-      <Route path="/about" element={<AboutPage />} />
+      <Route path="/about" element={<Suspense fallback={<div>Loading...</div>}><AboutPage /></Suspense>} />
+      <Route path="/contact" element={<Suspense fallback={<div>Loading...</div>}><ContactPage /></Suspense>} />
       <Route path="/login" element={<LoginPage />} />
       <Route path="/register" element={<RegisterPage />} />
 
